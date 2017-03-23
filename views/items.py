@@ -30,7 +30,7 @@ class Item(MethodView):
 		if result:
 			return jsonify({'status':'OK', 'item':result})
 		else:
-			result jsonify(CODE_ERROR)
+			return jsonify(CODE_ERROR)
 
 
 class Search(MethodView):

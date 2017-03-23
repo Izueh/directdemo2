@@ -39,12 +39,11 @@ class Search(MethodView):
 		item_type = json['type']
 		limit = 25
 		timestamp  = None
-		if 'limit' not in json:
-			continue
-		else if json['limit'] > 100:
-			return jsonify(CODE_ERROR)
-		else
-			limit = json.pop['limit']
+		if 'limit' in json:
+			if json['limit'] > 100:
+				return jsonify(CODE_ERROR)
+			else:
+				limit = json.pop['limit']
 		if item_type not in types:
 			return jsonify(CODE_ERROR)
 		if 'timestamp' in json:

@@ -17,15 +17,17 @@ class Login(MethodView):
 	def post(self):
 		json = request.get_json()
 		user = db.user.find_one({'username':json['username']})
-		if(check_password_hash(json['passoword']),user['password']):
+		if(check_password_hash(json['password'],user['password'])):
 			session['username'] =  user['username']
+		else:
+			return jsonify({'status':'ERROR','error':'failed to authenticate'})	
 		return jsonify({'status':'OK'})
 
 class Verify(MethodView):
 	def post(self):
 		json = request.get_json()
 		user = db.user.find_one({'email':json['email']})
-		if(json['key'] == user['key'] or json['key']=='abracadabra'):
+		if(json['key']=='abracadabra'):
 			db.user.update(user,{'$set':{'validated':True}})
 			return jsonify({'status':'OK'})
 		return jsonify({'status':'ERROR'})

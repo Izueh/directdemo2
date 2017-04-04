@@ -4,16 +4,8 @@ import messages
 
 class User(MethodView):
     def get(self, username):
-        user = db.user.find_one({'username':username})
-        if not user:
-            return jsonify({'status': 'error'})
-        else:
-            user_data = {
-                'email': user['email'],
-                'followers': user['followers'],
-                'following': user['following']
-            }
-            return jsonify({'status': 'OK', 'user' : user_data})
+        user = db.user.get({'username':username})
+        return jsonify(user)
 
 
 class Follow(MethodView):

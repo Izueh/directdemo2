@@ -1,21 +1,31 @@
 ---
-- hosts: appserver
+- hosts: application 
+  remote_user: ubuntu
   become: yes
   become_method: sudo
   tasks:
     - name: install dependencies
-      apt:
-        name: git python3 python3-setuptools
-        update_cache: yes
+      apt: name={{item}} state=latest update_cache=yes
+      with_items:
+        - git
+        - python3
+        - python3-setuptools
     - name: install pip
-      easy_install: name=pip
+      easy_install: name=pip executable=/usr/bin/easy_install3
     - name: clone repo
-      git: repo=https://github.com/izueh/directdemo2
+      git: repo=https://github.com/izueh/directdemo2 dest=/home/ubuntu/directdemo2
     - name: install libraries
-      pip: requirements=directdemo2/requirements.txt
-    - name: copy service scripts
-      copy: src=directdemo2/gunicorn.socket dest=/etc/systemd/system
-      copy: src=directdemo2/gunicorn.service dest=/etc/systemd/system
+      pip: requirements=/home/ubuntu/directdemo2/requirements.txt
+    - name: install gunicorn
+      pip: name=gunicorn
+    - name: copy socket scripts
+      copy: 
+        src: /home/ubuntu/directdemo2/config/gunicorn.socket 
+        dest: /etc/systemd/system
+    - name: copy service script
+      copy: 
+        src: /home/ubuntu/directdemo2/config/gunicorn.service 
+        dest: /etc/systemd/system
     - name: start app server
       systemd: name=gunicorn.socket enabled=yes state=started
 

@@ -1,0 +1,9 @@
+---
+- hosts: application 
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo 
+  tasks:
+    - name: copy something
+      apt: name=python3 update_cache=yes
+

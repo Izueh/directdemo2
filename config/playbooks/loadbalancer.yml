@@ -1,0 +1,19 @@
+---
+- hosts: loadbalancer
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install nginx
+      apt: name=nginx update_cache=yes
+    - name: delete default link
+      file: dest=/etc/nginx/sites-enabled/default state=absent
+    - name: copy configuration file
+      template: src=./directdemocracy dest=/etc/nginx/sites-available/
+    - name: make new link
+      file: src=/etc/nginx/sites-available/ state=link
+    - name: restart nginx
+      service: name=nginx state=restarted
+
+    
+      

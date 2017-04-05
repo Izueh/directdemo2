@@ -1,0 +1,61 @@
+---
+- hosts: servers
+  remote_user: ubuntu
+  become: yes
+
+  tasks:
+  - name: create playbooks directory
+    become_user: ubuntu
+    file: path=~/playbooks state=directory owner=ubuntu
+  - name: copy deploy.yml
+    become_user: ubuntu
+    copy:
+      src: ~/playbooks/deploy.yml
+      dest: ~/playbooks/deploy.yml 
+
+  - name: copy wp2key
+    become_user: ubuntu
+    copy: 
+      src: ~/.ssh/wp2key.pem
+      dest: ~/.ssh/wp2key.pem
+      mode: 0700
+  - name: copy ssh_config
+    copy:
+      src: /etc/ssh/ssh_config
+      dest: /etc/ssh/ssh_config
+
+  - name: install nginx
+    apt: name=nginx update_cache=yes
+
+  - name: download node
+    get_url: 
+      url: https://deb.nodesource.com/setup_6.x 
+      dest: /tmp/node_setup
+  - name: run node setup
+    shell: bash /tmp/node_setup
+  - name: install node
+    apt: name=nodejs 
+  - name: install build tools
+    apt: name=build-essential
+
+  - name: add cassandra to sources list
+    apt_repository: 
+      repo: deb http://www.apache.org/dist/cassandra/debian 310x main
+      state: present
+  - name: download cassandra repository keys
+    apt_key:
+      url: https://www.apache.org/dist/cassandra/KEYS
+      state: present
+  - name: install cassandra
+    apt: name=cassandra update_cache=yes
+
+  - name: add mongodb key
+    apt_key:
+      keyserver: keyserver.ubuntu.com
+      id: 0C49F3730359A14518585931BC711F9BA15703C6
+  - name: add mongodb to sources list
+    apt_repository: 
+      repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+      state: present
+  - name: install mongo
+    apt: name=mongodb-org update_cache=yes

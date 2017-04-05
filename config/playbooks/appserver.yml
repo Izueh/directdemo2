@@ -1,0 +1,22 @@
+---
+- hosts: appserver
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install dependencies
+      apt:
+        name: git python3 python3-setuptools
+        update_cache: yes
+    - name: install pip
+      easy_install: name=pip
+    - name: clone repo
+      git: repo=https://github.com/izueh/directdemo2
+    - name: install libraries
+      pip: requirements=directdemo2/requirements.txt
+    - name: copy service scripts
+      copy: src=directdemo2/gunicorn.socket dest=/etc/systemd/system
+      copy: src=directdemo2/gunicorn.service dest=/etc/systemd/system
+    - name: start app server
+      systemd: name=gunicorn.socket enabled=yes state=started
+
+  

@@ -80,6 +80,32 @@ class Search(MethodView):
         else:
             return jsonify(CODE_ERROR)
 
+# Search seems to be only related to tweets at least for their api,
+# we could just have this implementation to conform to their api.
+class NewSearch(MethodView):
+    def post(self):
+        json = request.get_json()
+        username = json.pop('username') if 'username' in json else None
+        following = json.pop('following') if 'following' in json else True
+        timestamp = json.pop('timestamp') if 'timestamp' in json else time()
+        search = 'q' in json
+        limit = json.pop('limit') if 'limit' in json and json['limit'] < 100 else 50
+        following_list = db.user.find_one({'username':session['username']})['following']
+        query = {'timestamp':timestamp}
+        if search:
+            query['$text'] = {'$search':json['q']}
+        if username:
+            if following:
+                query['username'] = username if username in following_list else ''
+            else:
+                query['username'] = username
+                
+        else:
+            if following:
+                query['username'] = {'$in': following_list}
+        results = db.items.find(query).limit(limit)
+        return jsonify({'status':'OK','items':list(results)})
+
 # post this shit to cassandra
 class Media(MethodView):
     def post(self):

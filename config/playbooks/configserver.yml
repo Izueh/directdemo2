@@ -1,0 +1,32 @@
+---
+- hosts: configservers
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: copy init
+      copy: src=/home/ubuntu/directdemo2/config/playbooks/rsinit.js dest=/home/ubuntu
+    - name: get mongo key 
+      apt_key:
+        keyserver: hkp://keyserver.ubuntu.com:80
+        id: 0C49F3730359A14518585931BC711F9BA15703C6
+        state: present
+    - name: add mongo to sources list
+      apt_repository: 
+        repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+        state: present
+    - name: install mongo
+      apt: name=mongodb-org update_cache=yes
+    - name: modify mongod conf for sharding
+      blockinfile: 
+        dest: /etc/mongod.conf
+        block: |
+          sharding:
+            clusterRole: configsvr
+          replication:
+            replSetName: directdemocracy 
+    - name: restart mongod
+      service: name=mongod state=restarted
+    - name: run replication set initiate
+      hosts: leadconfig
+      shell: mongo --shell /home/ubuntu/rsinit.js

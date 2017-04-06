@@ -86,6 +86,12 @@ class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
         username = json.pop('username') if 'username' in json else None
+        following = True
+        if 'following' in json:
+            following = json['following']
+        else:
+            if username:
+                following = False
         following = json.pop('following') if 'following' in json else True
         timestamp = json.pop('timestamp') if 'timestamp' in json else time()
         search = 'q' in json

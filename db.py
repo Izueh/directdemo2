@@ -1,3 +1,3 @@
-from pymongo import MongoClient
-client = MongoClient('localhost', 27017)
-db = client.directdemo
+from pymongo import MongoClient, ReadPreferences
+client = MongoClient('192.168.1.31',27017)
+db = client.directdemocracy

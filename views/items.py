@@ -95,11 +95,10 @@ class NewSearch(MethodView):
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
-            following = json['following']
+            following = json.pop('following')
         else:
             if username:
                 following = True
-        following = json.pop('following') if 'following' in json else True
         timestamp = json.pop('timestamp') if 'timestamp' in json else time()
         search = 'q' in json
         limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
@@ -116,6 +115,7 @@ class NewSearch(MethodView):
         else:
             if following:
                 query['username'] = {'$in': following_list}
+        print(dumps(query),file=f)
         results = db.items.find(query).limit(limit)
         print(dumps({'results':list(results)}),file=f)
         return jsonify({'status':'OK','items':list(results)})

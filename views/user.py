@@ -1,7 +1,7 @@
 from flask import jsonify, request, session
 from flask.views import MethodView
 from db import db
-import messages
+from messages import CODE_OK
 
 class User(MethodView):
     def get(self, username, query):

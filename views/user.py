@@ -11,7 +11,7 @@ class User(MethodView):
             if 'followers' not in user:
                 user['followers'] = 0
             else:
-                user['followers'] = len(user['followers']
+                user['followers'] = len(user['followers'])
             if 'following' not in user:
                 user['following'] = 0 
             else:

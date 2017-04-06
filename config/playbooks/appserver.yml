@@ -12,10 +12,6 @@
         - python3-setuptools
     - name: install pip
       easy_install: name=pip executable=/usr/bin/easy_install3
-    - name: delete repo if there
-      file: dest=/home/ubuntu/directdemo2 state=absent
-    - name: delete service file if exist
-      file: dest=/etc/systemd/system/gunicorn.service state=absent
     - name: clone repo
       git: repo=https://github.com/izueh/directdemo2 dest=/home/ubuntu/directdemo2
     - name: install libraries
@@ -27,6 +23,6 @@
         src: /home/ubuntu/directdemo2/config/gunicorn.service 
         dest: /etc/systemd/system
     - name: start app server
-      systemd: name=gunicorn.service enabled=yes state=started daemon_reload=yes
+      systemd: name=gunicorn.service enabled=yes state=restarted daemon_reload=yes
 
   

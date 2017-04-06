@@ -89,7 +89,7 @@ class Search(MethodView):
 class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
-        print(jsonify(json),file=sys.stderr)
+        print(jsonify(json))
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
@@ -115,7 +115,7 @@ class NewSearch(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
         results = db.items.find(query).limit(limit)
-        print(jsonify({'results':list(results)}),file=sys.stderr)
+        print(jsonify({'results':list(results)}))
         return jsonify({'status':'OK','items':list(results)})
 
 # post this shit to cassandra

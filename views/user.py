@@ -10,6 +10,8 @@ class User(MethodView):
         if not query:
             return jsonify({'status':'OK','user':user})
         else:
+            if query not in user:
+                return jsonify({'status':'OK','users':})
             return jsonify({'status':'OK','users':user[query]})
         
 class Following(MethodView):

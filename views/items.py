@@ -17,7 +17,7 @@ class AddItem(MethodView):
         else:
             result = db.items.insert_one(json)
         if result.acknowledged:
-            return jsonify({'status': 'OK', 'id': str(result.insertedID)})
+            return jsonify({'status': 'OK', 'id': str(result.inserted_id)})
         else:
             return jsonify(CODE_ERROR)
 

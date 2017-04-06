@@ -113,7 +113,7 @@ class NewSearch(MethodView):
         else:
             if following:
                 query['username'] = {'$in': following_list}
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}]).limit(limit)
+        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}]).batch_size(limit)
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 # post this shit to cassandra

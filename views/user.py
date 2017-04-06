@@ -1,4 +1,5 @@
-from flask import MethodView, jsonify, request, session
+from flask import jsonify, request, session
+from flask.views import MethodView
 from db import db
 import messages
 

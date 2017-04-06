@@ -35,6 +35,7 @@ class Item(MethodView):
             # put it into temporary items collection
             result = db.items.find_one({'_id': ObjectId(id)})
         if result:
+            result['_id'] = str(result['_id'])
             return jsonify({'status': 'OK', 'item': result})
         else:
             return jsonify(CODE_ERROR)

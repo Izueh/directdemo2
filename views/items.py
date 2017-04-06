@@ -12,6 +12,7 @@ class AddItem(MethodView):
     def post(self):
         json = request.get_json()
         json['timestamp'] = time()
+        json['username'] = session['username']
         item_type = json['type']
         if item_type in types:
             result = db[item_type].insert_one(json)

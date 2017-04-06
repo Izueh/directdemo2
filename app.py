@@ -17,6 +17,6 @@ app.add_url_rule('/media', view_func=Media.as_view('media'),methods=['POST'])
 
 
 if __name__ == '__main__':
-	app.config['DEBUG']=True
-	app.run()
+    app.config['DEBUG']=True
+    app.run()
 

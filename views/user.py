@@ -4,10 +4,13 @@ from db import db
 import messages
 
 class User(MethodView):
-    def get(self, username):
+    def get(self, username, query):
         user = db.user.find_one({'username':username})
         user['_id'] = str(user['_id'])
-        return jsonify({'status':'OK','user':user})
+        if not query:
+            return jsonify({'status':'OK','user':user})
+        else:
+            return jsonify({'status':'OK'.'users':user[query]})
         
 class Following(MethodView):
     def get(username):

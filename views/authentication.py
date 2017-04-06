@@ -10,13 +10,19 @@ class AddUser(MethodView):
 	def post(self):
 		json = request.get_json()
 		json['password'] = generate_password_hash(json['password'])
-		db.user.insert_one(json)
+        try: 
+            db.user.insert_one(json)
+        except: 
+            return jsonify({'status':'error','error':'user already exists'})
 		return jsonify(messages.CODE_OK)
 
 class Login(MethodView):
 	def post(self):
 		json = request.get_json()
 		user = db.user.find_one({'username':json['username']})
+        f = open('log','w')
+        f.write("username {0}, password {1}".format(json['username'],json['password']))
+
 		if(check_password_hash(json['password'],user['password'])):
 			session['username'] =  user['username']
 		else:

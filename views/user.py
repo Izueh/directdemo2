@@ -10,7 +10,7 @@ class User(MethodView):
         if not query:
             return jsonify({'status':'OK','user':user})
         else:
-            return jsonify({'status':'OK'.'users':user[query]})
+            return jsonify({'status':'OK','users':user[query]})
         
 class Following(MethodView):
     def get(username):

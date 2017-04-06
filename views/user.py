@@ -4,19 +4,19 @@ from db import db
 import messages
 
 class User(MethodView):
-    def get(self, username, query=None):
-        user = db.user.get({'username':username})
+    def get(self, username):
+        user = db.user.find_one({'username':username})
         user['_id'] = str(user['_id'])
         return jsonify({'status':'OK','user':user})
         
 class Following(MethodView):
     def get(username):
-        user = db.user.get({'username':username})
+        user = db.user.find_one({'username':username})
         return jsonify({'status':'OK', 'users':user['following']})
 
 class Followers(MethodView):
     def get(username):
-        user = db.user.get({'username':username})
+        user = db.user.find_one({'username':username})
         return jsonify({'status':'OK', 'users':user['followers']})
 
 

@@ -115,7 +115,7 @@ class NewSearch(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
         results = db.items.find(query).limit(limit)
-        print(jsonify(results),file=sys.stderr)
+        print(jsonify({'results':list(results}),file=sys.stderr))
         return jsonify({'status':'OK','items':list(results)})
 
 # post this shit to cassandra

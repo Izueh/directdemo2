@@ -4,9 +4,14 @@ from views.authentication import AddUser, Login, Logout, Verify
 from views.items import AddItem, Search, Item, Media, NewSearch
 from views.user import User, Follow, Following, Followers
 import messages
+import logging
 
 app = Flask(__name__)
 app.secret_key = 'secret sezchuan sauce'
+
+gunicorn_error_logger = logging.getLogger('log/gunicorn-error')
+app.logger.handlers.extend(gunicorn_error_logger.handlers)
+app.logger.setLevel(logging.DEBUG)
 
 app.add_url_rule('/adduser', view_func=AddUser.as_view('adduser'),methods=['POST'])
 app.add_url_rule('/login', view_func=Login.as_view('login'),methods=['POST'])

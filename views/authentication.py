@@ -20,9 +20,6 @@ class Login(MethodView):
     def post(self):
         json = request.get_json()
         user = db.user.find_one({'username':json['username']})
-        f = open('log','w')
-        f.write("username {0}, password {1}".format(json['username'],json['password']))
-
         if(check_password_hash(json['password'],user['password'])):
             session['username'] =  user['username']
         else:

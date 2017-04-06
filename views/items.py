@@ -98,7 +98,7 @@ class NewSearch(MethodView):
         following = json.pop('following') if 'following' in json else True
         timestamp = json.pop('timestamp') if 'timestamp' in json else time()
         search = 'q' in json
-        limit = json.pop('limit') if 'limit' in json and json['limit'] < 100 else 50
+        limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
         following_list = db.user.find_one({'username':session['username']})['following']
         query = {'timestamp':timestamp}
         if search:

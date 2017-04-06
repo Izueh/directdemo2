@@ -21,6 +21,11 @@ app.add_url_rule('/user/<string:username>/<string:query>', view_func=User.as_vie
 #app.add_url_rule('/user/<string:username>/', view_func=Following.as_view('following'))
 app.add_url_rule('/follow',view_func=Follow.as_view('follow'),methods=['POST'])
 
+@app.before_request
+def log_request_info():
+    app.logger.debug('Headers: %s', request.headers)
+    app.logger.debug('Body: %s', request.get_data())
+
 if __name__ == '__main__':
     app.config['DEBUG']=True
     app.run()

@@ -3,6 +3,7 @@ from flask import request, jsonify
 from messages import CODE_ERROR, CODE_OK
 from db import db
 from time import time
+from bson import ObjectId
 
 types = ['poll', 'vote', 'justification', 'document']
 
@@ -29,10 +30,10 @@ class Item(MethodView):
 
         result = None
         if item_type in types:
-            result = db[item_type].find_one({'id': id})
+            result = db[item_type].find_one({'_id': ObjectId(id)})
         else:
             # put it into temporary items collection
-            restult = db.items.find_one({'id': id})
+            restult = db.items.find_one({'_id': ObjectId(id)})
         if result:
             return jsonify({'status': 'OK', 'item': result})
         else:
@@ -44,9 +45,9 @@ class Item(MethodView):
             item_type = request.args['type']
         
         if item_type in types:
-            result = db[item_type].delete_one({'id': id});
+            result = db[item_type].delete_one({'_id': ObjectId(id)});
         else:
-            result = db['items'].delete_one({'id': id});
+            result = db['items'].delete_one({'_id': ObjectId(id)});
 
         if result:
             return jsonify({'status': 'OK'})

@@ -9,10 +9,13 @@ class User(MethodView):
         user['_id'] = str(user['_id'])
         if not query:
             if 'followers' not in user:
-                user['followers'] = []
+                user['followers'] = 0
+            else:
+                user['followers'] = len(user['followers']
             if 'following' not in user:
-                user['following'] = []
-
+                user['following'] = 0 
+            else:
+                user['following'] = len(user['following'])
             return jsonify({'status':'OK','user':user})
         else:
             if query not in user:

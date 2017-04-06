@@ -20,7 +20,7 @@ class Login(MethodView):
     def post(self):
         json = request.get_json()
         user = db.user.find_one({'username':json['username']})
-        if(check_password_hash(json['password'],user['password'])):
+        if(check_password_hash(user['password'],json['password'])):
             session['username'] =  user['username']
         else:
             return jsonify({'status':'ERROR','error':'failed to authenticate'})	

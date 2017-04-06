@@ -18,15 +18,11 @@
       pip: requirements=/home/ubuntu/directdemo2/requirements.txt
     - name: install gunicorn
       pip: name=gunicorn
-    - name: copy socket scripts
-      copy: 
-        src: /home/ubuntu/directdemo2/config/gunicorn.socket 
-        dest: /etc/systemd/system
     - name: copy service script
       copy: 
         src: /home/ubuntu/directdemo2/config/gunicorn.service 
         dest: /etc/systemd/system
     - name: start app server
-      systemd: name=gunicorn.socket enabled=yes state=started
+      systemd: name=gunicorn.service enabled=yes state=started
 
   

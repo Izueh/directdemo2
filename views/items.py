@@ -4,6 +4,7 @@ from messages import CODE_ERROR, CODE_OK
 from db import db
 from time import time
 from bson import ObjectId
+import sys
 
 types = ['poll', 'vote', 'justification', 'document']
 
@@ -88,6 +89,7 @@ class Search(MethodView):
 class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
+        print(file=sys.stderr,jsonify(json))
         print("Hello")
         username = json.pop('username') if 'username' in json else None
         following = True

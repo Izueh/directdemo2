@@ -94,7 +94,7 @@ class NewSearch(MethodView):
             following = json['following']
         else:
             if username:
-                following = False
+                following = True
         following = json.pop('following') if 'following' in json else True
         timestamp = json.pop('timestamp') if 'timestamp' in json else time()
         search = 'q' in json

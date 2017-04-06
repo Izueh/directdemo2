@@ -90,6 +90,7 @@ class Search(MethodView):
 class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
+        f = open('log/search.txt','a')
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
@@ -113,7 +114,12 @@ class NewSearch(MethodView):
         else:
             if following:
                 query['username'] = {'$in': following_list}
+<<<<<<< HEAD
         results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}])
+=======
+        results = db.items.find(query).limit(limit)
+        print(list(results),file=f)
+>>>>>>> 889a77dd2ef21ed715997f2fb23cf7a124ace11c
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 # post this shit to cassandra

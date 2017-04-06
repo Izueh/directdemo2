@@ -12,12 +12,12 @@ class User(MethodView):
 class Following(MethodView):
     def get(username):
         user = db.user.get({'username':username})
-        return jsonify({'status':'OK', 'users':user['following'])
+        return jsonify({'status':'OK', 'users':user['following']})
 
 class Followers(MethodView):
     def get(username):
         user = db.user.get({'username':username})
-        return jsonify({'status':'OK', 'users':user['followers'])
+        return jsonify({'status':'OK', 'users':user['followers']})
 
 
 class Follow(MethodView):

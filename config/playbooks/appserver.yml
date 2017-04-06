@@ -13,7 +13,7 @@
     - name: install pip
       easy_install: name=pip executable=/usr/bin/easy_install3
     - name: clone repo
-      git: repo=https://github.com/izueh/directdemo2 dest=/home/ubuntu/directdemo2
+      git: repo=https://github.com/izueh/directdemo2 dest=/home/ubuntu/directdemo2 become_user=ubuntu
     - name: install libraries
       pip: requirements=/home/ubuntu/directdemo2/requirements.txt
     - name: install gunicorn

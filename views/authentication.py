@@ -10,6 +10,8 @@ class AddUser(MethodView):
     def post(self):
         json = request.get_json()
         json['password'] = generate_password_hash(json['password'])
+        json['following'] = []
+        json['followers'] = []
         try: 
             db.user.insert_one(json)
         except: 

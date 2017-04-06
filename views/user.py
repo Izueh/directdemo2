@@ -8,14 +8,8 @@ class User(MethodView):
         user = db.user.find_one({'username':username})
         user['_id'] = str(user['_id'])
         if not query:
-            if 'followers' not in user:
-                user['followers'] = 0
-            else:
-                user['followers'] = len(user['followers'])
-            if 'following' not in user:
-                user['following'] = 0 
-            else:
-                user['following'] = len(user['following'])
+            user['followers'] = len(user['followers'])
+            user['following'] = len(user['following'])
             return jsonify({'status':'OK','user':user})
         else:
             if query not in user:

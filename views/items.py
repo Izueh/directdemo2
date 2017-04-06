@@ -5,6 +5,7 @@ from db import db
 from time import time
 from bson import ObjectId
 import sys
+from json import dumps
 
 types = ['poll', 'vote', 'justification', 'document']
 
@@ -90,7 +91,7 @@ class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
         f = open('log/search.log','w')
-        print(jsonify(json),file=f)
+        print(dumps(json),file=f)
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
@@ -116,7 +117,7 @@ class NewSearch(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
         results = db.items.find(query).limit(limit)
-        print(jsonify({'results':list(results)}),file=f)
+        print(dumps({'results':list(results)}),file=f)
         return jsonify({'status':'OK','items':list(results)})
 
 # post this shit to cassandra

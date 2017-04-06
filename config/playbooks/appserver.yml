@@ -27,6 +27,6 @@
         src: /home/ubuntu/directdemo2/config/gunicorn.service 
         dest: /etc/systemd/system
     - name: start app server
-      systemd: name=gunicorn.service enabled=yes state=started
+      systemd: name=gunicorn.service enabled=yes state=started daemon_reload=yes
 
   

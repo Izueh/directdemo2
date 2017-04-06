@@ -103,7 +103,7 @@ class NewSearch(MethodView):
         search = 'q' in json
         limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
         following_list = db.user.find_one({'username':session['username']})['following']
-        query = {'timestamp':timestamp}
+        query = {'timestamp':{'$lte':timestamp}}
         if search:
             query['$text'] = {'$search':json['q']}
         if username:

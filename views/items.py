@@ -114,7 +114,7 @@ class NewSearch(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
         results = db.items.find(query).limit(limit)
-        return Response(response = dumps({'status':'OK','items':list(results)},mimetype='application/json')
+        return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 # post this shit to cassandra
 class Media(MethodView):

@@ -7,16 +7,17 @@ class User(MethodView):
     def get(self, username, query=None):
         user = db.user.get({'username':username})
         user['_id'] = str(user['_id'])
-        if not query:
-            return jsonify({'status':'OK','user':user})
-        elif query == 'followers':
-            return jsonify({'status':'OK','users':user['followers']})
-        elif query == 'following':
-            return jsonify({'status':'OK','users':user['following']})
-        else:
-            return jsonify({'status':'error','error':'invalid route'})
+        return jsonify({'status':'OK','user':user})
+        
+class Following(MethodView):
+    def get(username):
+        user = db.user.get({'username':username})
+        return jsonify({'status':'OK', 'users':user['following'])
 
-
+class Followers(MethodView):
+    def get(username):
+        user = db.user.get({'username':username})
+        return jsonify({'status':'OK', 'users':user['followers'])
 
 
 class Follow(MethodView):

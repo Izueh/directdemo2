@@ -90,7 +90,7 @@ class Search(MethodView):
 class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
-        f = open('log/search.log','w')
+        f = open('log/search.log','a')
         print(dumps(json),file=f)
         username = json.pop('username') if 'username' in json else None
         following = True

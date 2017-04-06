@@ -1,6 +1,6 @@
 from flask.views import MethodView
 from flask import request, jsonify
-import messages
+from messages import CODE_ERROR, CODE_OK
 from db import db
 from time import time
 

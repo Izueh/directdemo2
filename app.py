@@ -5,6 +5,7 @@ from views.items import AddItem, Search, Item, Media, NewSearch
 import messages
 
 app = Flask(__name__)
+app.secret_key = 'secret sezchuan sauce'
 
 app.add_url_rule('/adduser', view_func=AddUser.as_view('adduser'),methods=['POST'])
 app.add_url_rule('/login', view_func=Login.as_view('login'),methods=['POST'])

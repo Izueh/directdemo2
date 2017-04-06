@@ -1,11 +1,11 @@
 from flask.views import MethodView
-from flask import request, jsonify, session
+from flask import request,jsonify session
 from messages import CODE_ERROR, CODE_OK
 from db import db
 from time import time
 from bson import ObjectId
 import sys
-from json import dumps
+from bson.json_util import dumps
 
 types = ['poll', 'vote', 'justification', 'document']
 
@@ -90,8 +90,6 @@ class Search(MethodView):
 class NewSearch(MethodView):
     def post(self):
         json = request.get_json()
-        f = open('log/search.log','a')
-        print(dumps(json),file=f)
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
@@ -115,10 +113,8 @@ class NewSearch(MethodView):
         else:
             if following:
                 query['username'] = {'$in': following_list}
-        print(dumps(query),file=f)
         results = db.items.find(query).limit(limit)
-        print(dumps({'results':list(results)}),file=f)
-        return jsonify({'status':'OK','items':list(results)})
+        return Response(response = dumps{'status':'OK','items':list(results)},mimetype='application/json')
 
 # post this shit to cassandra
 class Media(MethodView):

@@ -7,7 +7,9 @@ User=ubuntu
 Group=www-data
 WorkingDirectory=/home/ubuntu/directdemo2
 ExecStart=/usr/local/bin/gunicorn \
-          --bind 0.0.0.0:8000 app:app 
+          --bind 0.0.0.0:8000 app:app \
+          --access-logfile /var/log/gunicorn-access \
+          --error-logfile /var/log/gunicorn-error
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true

@@ -1,16 +1,13 @@
 [Unit]
 Description=gunicorn daemon
-Requires=gunicorn.socket
 After=network.target
 
 [Service]
-PIDFile=/run/gunicorn/pid
 User=ubuntu
 Group=www-data
-RuntimeDirectory=/home/ubuntu/directdemo2/venv/bin/gunicorn
 WorkingDirectory=/home/ubuntu/directdemo2
-ExecStart=/usr/bin/gunicorn --pid /run/gunicorn/pid   \
-          --bind unix:/run/gunicorn/socket app:app 
+ExecStart=/usr/local/bin/gunicorn 
+          --bind 0.0.0.0:8000 app:app 
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
 PrivateTmp=true

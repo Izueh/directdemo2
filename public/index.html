@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="form.js"></script>
+	</head>
+	<body>
+		<form class="staticRoute" action="/adduser" method="post">
+			<input type="text" name="username" placeholder="username">
+			<input type="text" name="email" placeholder="email">
+			<input type="password" name="password" placeholder="password">
+			<input type="submit" value="Add User"> 
+		</form>
+
+		<form class="staticRoute" action="/verify" method="post">
+			<input type="text" name="email" placeholder="email">
+			<input type="text" name="key" placeholder="key">
+			<input type="submit" value="Verify">
+		</form>
+
+		<form class="staticRoute" action="/login" method="post">
+			<input type="text" name="username" placeholder="username">
+			<input type="password" name="password" placeholder="password">
+			<input type="submit" value="Login">
+		</form>
+
+		<form class="staticRoute" action="/logout">
+			<input type="submit" value="Logout" method="post">
+		</form>
+
+		<form class="staticRoute" action="/additem">
+			<input type="text" name="content" placeholder="content">
+			<input type="submit" value="Add Item" method="post">
+		</form>	
+
+		<form class="routeID" method="get">
+			<input type="text" id="itemID" name="ID" placeholder="ID">
+			<input type="text" name="content" placeholder="content">
+			<input type="submit" value="Get Item" method="get">
+		</form>
+
+		<form class="staticRoute" action="/search">
+			<input type="text" name="timestamp" placeholder="timestamp">
+			<input type="text" name="limit" placeholder="limit">
+			<input type="submit" value="Search" method="post">
+		</form>	
+
+		<div id="items">
+		</div>
+	</body>
+</html>

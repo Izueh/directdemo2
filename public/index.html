@@ -4,43 +4,64 @@
 		<script type="text/javascript" src="form.js"></script>
 	</head>
 	<body>
-		<form class="staticRoute" action="/adduser" method="post">
+		<form class="staticRoute" action="/api/adduser" method="post">
 			<input type="text" name="username" placeholder="username">
 			<input type="text" name="email" placeholder="email">
 			<input type="password" name="password" placeholder="password">
 			<input type="submit" value="Add User"> 
 		</form>
 
-		<form class="staticRoute" action="/verify" method="post">
+		<form class="staticRoute" action="/api/verify" method="post">
 			<input type="text" name="email" placeholder="email">
 			<input type="text" name="key" placeholder="key">
 			<input type="submit" value="Verify">
 		</form>
 
-		<form class="staticRoute" action="/login" method="post">
+		<form class="staticRoute" action="/api/login" method="post">
 			<input type="text" name="username" placeholder="username">
 			<input type="password" name="password" placeholder="password">
 			<input type="submit" value="Login">
 		</form>
 
-		<form class="staticRoute" action="/logout">
+		<form class="staticRoute" action="/api/logout">
 			<input type="submit" value="Logout" method="post">
 		</form>
 
-		<form class="staticRoute" action="/additem">
+		<form class="staticRoute" action="/api/additem">
 			<input type="text" name="content" placeholder="content">
+			<input type="text" name="type" placeholder="type">
 			<input type="submit" value="Add Item" method="post">
 		</form>	
 
 		<form class="routeID" method="get">
 			<input type="text" id="itemID" name="ID" placeholder="ID">
-			<input type="text" name="content" placeholder="content">
 			<input type="submit" value="Get Item" method="get">
 		</form>
 
-		<form class="staticRoute" action="/search">
+		<form class="deleteRouteID" method="delete">
+			<input type="text" id="itemIDDel" name="ID" placeholder="ID">
+			<input type="submit" value="Delete" method="get">
+		</form>
+
+		<form class="userRoute" action="/api/user/">
+			<input type="text" id="usernameGET" name="ID" placeholder="ID">
+            <button id="userFollowers">Get User Followers</button>
+            <button id=userFollowing>Get User Following</button>
+			<input type="submit" value="Get User" method="get">
+		</form>
+
+		<form class="staticRoute" action="/api/follow" method="post">
+			<input type="text" id="toFollow" name="username" placeholder="username">
+			<input type="text" name="follow" placeholder="follow">
+			<input type="submit" value="Follow a User" method="get">
+		</form>
+
+		<form class="staticRoute" action="/api/search">
 			<input type="text" name="timestamp" placeholder="timestamp">
 			<input type="text" name="limit" placeholder="limit">
+			<input type="text" name="q" placeholder="q">
+			<input type="text" name="username" placeholder="username">
+			<input type="text" name="following" placeholder="following">
 			<input type="submit" value="Search" method="post">
 		</form>	
 

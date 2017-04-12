@@ -58,6 +58,21 @@ class Item(MethodView):
         else:
             return jsonify({'status': 'error'})
 
+    def post(self, id):
+        json = request.get_json()
+        if 'like' not in json:
+            json['like'] = False
+
+        if json['like'] == True:
+            result = db['items'].update_one({'_id': ObjectId(id)}, {'$push': {'likes': session['username']}})
+        else:
+            result = db['items'].update_one({'_id': ObjectId(id)}, {'$pull': {'likes': session['username']}})
+        if result:
+            return jsonify({'status': 'OK'})
+        else:
+            return jsonify({'status': 'error'})
+
+
 
 class Search(MethodView):
     def post(self):

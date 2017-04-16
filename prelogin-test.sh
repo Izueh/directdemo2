@@ -1,53 +1,16 @@
-#adduser
-echo "Testing adduser {username: testuser, password: testpass, email: testemail}"
-response=$(curl localhost/adduser -d '{"username":"testuser", "password":"testpass", "email":"testemail"}' -H "Content-Type: application/json")
-status=$(jq -r '.status' <<< $response)
-if [ "$status" = "error" ]
-then
-    echo -e "\e[32mGot status: 'error' (expected error, user already exists)"
-else
-    echo -e "\e[31mDidn't get status: 'error' (expected error, user already exists)"
-    echo $response
-fi
-echo -e "\e[39m"
-
-#verify
-echo "Testing verify"
-response=$(curl localhost/verify -d '{"email":"testemail", "key":"abracadabra"}' -H "Content-Type: application/json")
-status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
-then
-    echo -e "\e[32mGot status: 'OK'"
-else
-    echo -e "\e[31mDidn't get status: 'OK'"
-    echo $response
-fi
-echo -e "\e[39m"
-
-#login
-echo "Testing login"
-response=$(curl localhost/login -d '{"username":"testuser", "password":"testpass"}' -H "Content-Type: application/json" -c saved-cookie)
-status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
-then
-    echo -e "\e[32mGot status: 'OK'"
-else
-    echo -e "\e[31mDidn't get status: 'OK'"
-    echo $response
-fi
-echo -e "\e[39m"
+#Test that API calls require login
 
 #additem
 echo "Testing additem (WITHOUT parent or media)"
 response=$(curl localhost/additem -d '{"content":"test tweet", "type":"inventory"}' -H "Content-Type: application/json" -b saved-cookie)
-itemid=$(jq -r '.id' <<< "$response")
+itemid=$(jq -r '.id' <<< $response)
 status=$(jq -r '.status' <<< $response)
-echo "id:" $itemid
-if [ "$status" = "OK" ]
+echo "id: $itemid"
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -57,11 +20,11 @@ echo "Testing get item"
 echo "curl localhost/item/$itemid"
 response=$(curl localhost/item/$itemid -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -71,11 +34,11 @@ echo "Testing additem with parent"
 content=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "parent":'"\"$itemid\""'}' -H "Content-Type: application/json" -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$content")
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -84,11 +47,11 @@ echo -e "\e[39m"
 echo "Testing search with no options"
 response=$(curl localhost/search -d '{}' -H "Content-Type: application/json" -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -96,11 +59,11 @@ echo -e "\e[39m"
 echo "Testing search with following=false"
 response=$(curl localhost/search -d '{"following":"false"}' -H "Content-Type: application/json" -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -110,11 +73,11 @@ echo "Testing like"
 echo "curl localhost/item/$itemid/like"
 response=$(curl localhost/$itemid/like -X POST -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -124,11 +87,11 @@ echo "Testing add media"
 response=$(curl localhost/addmedia -F content=<../nbc-fires-donald-trump-after-he-calls-mexicans-rapists.jpg -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$response")
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -137,11 +100,11 @@ echo -e "\e[39m"
 echo "Testing get media"
 response=$(curl localhost/media/$itemid -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
@@ -151,24 +114,25 @@ echo "Testing additem with parent and media"
 response=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "media":'"[\"$itemid\"]"'}' -H "Content-Type: application/json" -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$response")
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"
 
 #logout
 echo "Testing logout"
-response=$(curl localhost/logout -X POST -b saved-cookie -c saved-cookie)
+response=$(curl localhost/logout -X POST -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
+echo $response
+if [ "$status" = "error" ]
 then
-    echo -e "\e[32mGot status: 'OK'"
+    echo -e "\e[32mGot status: 'error' as expected"
 else
-    echo -e "\e[31mDidn't get status: 'OK'"
+    echo -e "\e[31mGot status: $status"
     echo $response
 fi
 echo -e "\e[39m"

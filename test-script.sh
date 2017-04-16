@@ -1,68 +1,162 @@
 #adduser
 echo "Testing adduser {username: testuser, password: testpass, email: testemail}"
-curl localhost/adduser -d '{"username":"testuser", "password":"testpass", "email":"testemail"}' -H "Content-Type: application/json"
-echo ""
+response=$(curl localhost/adduser -d '{"username":"testuser", "password":"testpass", "email":"testemail"}' -H "Content-Type: application/json")
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "error" ]
+then
+    echo -e "\e[32mGot status: 'error' (expected error, user already exists)"
+else
+    echo -e "\e[31mDidn't get status: 'error' (expected error, user already exists)"
+fi
+echo -e "\e[39m"
 
 #verify
 echo "Testing verify"
-curl localhost/verify -d '{"email":"testemail", "key":"abracadabra"}' -H "Content-Type: application/json"
-echo ""
+response=$(curl localhost/verify -d '{"email":"testemail", "key":"abracadabra"}' -H "Content-Type: application/json")
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #login
 echo "Testing login"
-curl localhost/login -d '{"username":"testuser", "password":"testpass"}' -H "Content-Type: application/json" -c saved-cookie
-echo ""
+response=$(curl localhost/login -d '{"username":"testuser", "password":"testpass"}' -H "Content-Type: application/json" -c saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #additem
 echo "Testing additem (WITHOUT parent or media)"
-content=$(curl localhost/additem -d '{"content":"test tweet", "type":"inventory"}' -H "Content-Type: application/json" -b saved-cookie)
-itemid=$(jq -r '.id' <<< "$content")
+response=$(curl localhost/additem -d '{"content":"test tweet", "type":"inventory"}' -H "Content-Type: application/json" -b saved-cookie)
+itemid=$(jq -r '.id' <<< "$response")
+status=$(jq -r '.status' <<< $response)
 echo "id:" $itemid
-echo ""
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #get item
 echo "Testing get item"
 echo "curl localhost/item/$itemid"
-curl localhost/item/$itemid -b saved-cookie
-echo ""
+response=$(curl localhost/item/$itemid -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #additem with parent
 echo "Testing additem with parent"
 content=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "parent":'"\"$itemid\""'}' -H "Content-Type: application/json" -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$content")
-echo ""
-
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #search 
 echo "Testing search with no options"
-curl localhost/search -d '{}' -H "Content-Type: application/json" -b saved-cookie
-echo ""
+response=$(curl localhost/search -d '{}' -H "Content-Type: application/json" -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
+
+echo "Testing search with following=false"
+response=$(curl localhost/search -d '{"following":"false"}' -H "Content-Type: application/json" -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #like
 echo "Testing like"
 echo "curl localhost/item/$itemid/like"
-curl localhost/$itemid/like -X POST -b saved-cookie
-echo ""
+response=$(curl localhost/$itemid/like -X POST -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #add media
 echo "Testing add media"
-content=$(curl localhost/addmedia -F content=<../nbc-fires-donald-trump-after-he-calls-mexicans-rapists.jpg -b saved-cookie)
-itemid=$(jq -r '.id' <<< "$content")
-echo ""
+response=$(curl localhost/addmedia -F content=<../nbc-fires-donald-trump-after-he-calls-mexicans-rapists.jpg -b saved-cookie)
+itemid=$(jq -r '.id' <<< "$response")
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #get media
 echo "Testing get media"
-curl localhost/media/$itemid -b saved-cookie
-echo ""
+response=$(curl localhost/media/$itemid -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #additem with media
 echo "Testing additem with parent and media"
-content=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "media":'"[\"$itemid\"]"'}' -H "Content-Type: application/json" -b saved-cookie)
-itemid=$(jq -r '.id' <<< "$content")
-echo ""
+response=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "media":'"[\"$itemid\"]"'}' -H "Content-Type: application/json" -b saved-cookie)
+itemid=$(jq -r '.id' <<< "$response")
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 
 #logout
 echo "Testing logout"
-curl localhost/logout -X POST -b saved-cookie 
-echo ""
+response=$(curl localhost/logout -X POST -b saved-cookie)
+status=$(jq -r '.status' <<< $response)
+if [ "$status" = "OK" ]
+then
+    echo -e "\e[32mGot status: 'OK'"
+else
+    echo -e "\e[31mDidn't get status: 'OK'"
+fi
+echo -e "\e[39m"
 

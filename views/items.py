@@ -1,6 +1,6 @@
 from flask.views import MethodView
 from flask import request,jsonify,session, Response
-from messages import CODE_ERROR, CODE_OK
+from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
 from db import db
 from time import time
 from bson import ObjectId

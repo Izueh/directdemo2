@@ -1,7 +1,7 @@
 from flask import Flask, request, session
 from pymongo import MongoClient
 from views.authentication import AddUser, Login, Logout, Verify
-from views.items import AddItem, Search, Item, Media, NewSearch
+from views.items import AddItem, Search, Item, Media
 from views.user import User, Follow, Following, Followers
 import messages
 import logging
@@ -20,7 +20,7 @@ app.add_url_rule('/logout', view_func=Logout.as_view('logout'),methods=['POST'])
 app.add_url_rule('/additem',view_func=AddItem.as_view('additem'),methods=['POST'])
 app.add_url_rule('/item/<id>', view_func=Item.as_view('item'),methods=['GET', 'DELETE'])
 app.add_url_rule('/item/<id>/like',view_func=Item.as_view('like'),methods=['POST'])
-app.add_url_rule('/search', view_func=NewSearch.as_view('search'),methods=['POST'])
+app.add_url_rule('/search', view_func=Search.as_view('search'),methods=['POST'])
 app.add_url_rule('/media', view_func=Media.as_view('media'),methods=['POST'])
 app.add_url_rule('/user/<string:username>',defaults={'query':None},view_func=User.as_view('user'))
 app.add_url_rule('/user/<string:username>/<string:query>', view_func=User.as_view('followers'))

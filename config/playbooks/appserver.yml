@@ -12,9 +12,9 @@
         - python3-setuptools
     - name: install pip
       easy_install: name=pip executable=/usr/bin/easy_install3
-    - name: clone repo
+    - name: copy app 
       become_user: ubuntu
-      git: repo=https://github.com/izueh/directdemo2 dest=/home/ubuntu/directdemo2 
+      copy: src=/home/ubuntu/directdemo2/app dest=/home/ubuntu/app 
     - name: install libraries
       pip: requirements=/home/ubuntu/directdemo2/requirements.txt
     - name: install gunicorn

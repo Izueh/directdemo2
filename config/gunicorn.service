@@ -5,7 +5,7 @@ After=network.target
 [Service]
 User=ubuntu
 Group=www-data
-WorkingDirectory=/home/ubuntu/directdemo2
+WorkingDirectory=/home/ubuntu/app
 ExecStart=/usr/local/bin/gunicorn -b 0.0.0.0:8000 -t 5 -w 4 app:app --access-logfile /home/ubuntu/log/gunicorn-access --error-logfile /home/ubuntu/log/gunicorn-error --capture-output --enable-stdio-inheritance
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID

@@ -7,36 +7,22 @@ from bson import ObjectId
 import sys
 from bson.json_util import dumps
 
-types = ['poll', 'vote', 'justification', 'document']
-
-
 class AddItem(MethodView):
     def post(self):
         json = request.get_json()
         json['timestamp'] = time()
         json['username'] = session['username']
-        item_type = json['type']
-        if item_type in types:
-            result = db[item_type].insert_one(json)
-        else:
-            result = db.items.insert_one(json)
+        result = db.items.insert_one(json)
         if result.acknowledged:
+            if 'parent' in json:
+                db.items.update_one({'_id':ObjectId(json['parent'])},{'replies':{'$push':json}})
             return jsonify({'status': 'OK', 'id': str(result.inserted_id)})
         else:
             return jsonify(CODE_ERROR)
 
 class Item(MethodView):
     def get(self, id):
-        item_type = None
-        if 'type' in request.args:
-            item_type = request.args['type']
-
-        result = None
-        if item_type in types:
-            result = db[item_type].find_one({'_id': ObjectId(id)})
-        else:
-            # put it into temporary items collection
-            result = db.items.find_one({'_id': ObjectId(id)})
+        result = db.items.find_one({'_id': ObjectId(id)})
         if result:
             result['_id'] = str(result['_id'])
             return jsonify({'status': 'OK', 'item': result})
@@ -44,15 +30,8 @@ class Item(MethodView):
             return jsonify(CODE_ERROR)
 
     def delete(self, id):
-        item_type = None
-        if 'type' in request.args:
-            item_type = request.args['type']
-        
-        if item_type in types:
-            result = db[item_type].delete_one({'_id': ObjectId(id)});
-        else:
-            result = db['items'].delete_one({'_id': ObjectId(id)});
-
+        result = db['items'].delete_one({'_id': ObjectId(id)});
+        # delete medias in cassandra
         if result:
             return jsonify({'status': 'OK'})
         else:
@@ -60,49 +39,22 @@ class Item(MethodView):
 
     def post(self, id):
         json = request.get_json()
-        if 'like' not in json:
-            json['like'] = False
-
-        if json['like'] == True:
-            result = db['items'].update_one({'_id': ObjectId(id)}, {'$push': {'likes': session['username']}})
+        tweet = db.items.find_one({'_id':ObjectId(id)})
+        if json['like']:
+            if session['username'] in tweet['likes']:
+                return jsonify({'status': 'error','error':'user already likes this tweet'})
+            tweet['likes'].append(session['username'])
         else:
-            result = db['items'].update_one({'_id': ObjectId(id)}, {'$pull': {'likes': session['username']}})
-        if result:
-            return jsonify({'status': 'OK'})
-        else:
-            return jsonify({'status': 'error'})
-
-
-
-class Search(MethodView):
-    def post(self):
-        json = request.get_json()
-        if 'type' not in json or json['type'] not in types:
-            # doing this only to conform to gradin script
-            item_type = 'items'
-        else:
-            item = json['type']
-
-        limit = 25
-        if 'limit' in json:
-            if json['limit'] > 100 or json['limit'] < 0:
-                return jsonify(CODE_ERROR)
+            if session['username'] in tweet['likes']:
+                tweet['likes'].pop(session['username'])
             else:
-                limit = json.pop('limit')
-
-        timestamp = None
-        if 'timestamp' in json:
-           json['timestamp'] = {'timestamp': {'$lte': json['timestamp']}}
-
-        result = db[item_type].find({json}).limit(limit)
-        if result:
-            return jsonify({'status': 'OK', 'items': list(result)})
-        else:
-            return jsonify(CODE_ERROR)
+                return jsonify({'status':'error','error':'user has not liked this'})
+        db.replace_one({'_id':tweet['_id']}, tweet)
+        return jsonify({'status': 'OK'})
 
 # Search seems to be only related to tweets at least for their api,
 # we could just have this implementation to conform to their api.
-class NewSearch(MethodView):
+class Search(MethodView):
     def post(self):
         json = request.get_json()
         username = json.pop('username') if 'username' in json else None

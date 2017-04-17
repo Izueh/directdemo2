@@ -1,6 +1,6 @@
 #adduser
-echo "Testing adduser {username: testuser, password: testpass, email: testemail}"
-response=$(curl localhost/adduser -d '{"username":"testuser", "password":"testpass", "email":"testemail"}' -H "Content-Type: application/json")
+echo "Testing adduser {username: followuser, password: followpass, email: followemail}"
+response=$(curl localhost/adduser -d '{"username":"followuser", "password":"followpass", "email":"followemail"}' -H "Content-Type: application/json")
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "error" ]
 then
@@ -13,7 +13,7 @@ echo -e "\e[39m"
 
 #verify
 echo "Testing verify"
-response=$(curl localhost/verify -d '{"email":"testemail", "key":"abracadabra"}' -H "Content-Type: application/json")
+response=$(curl localhost/verify -d '{"email":"followemail", "key":"abracadabra"}' -H "Content-Type: application/json")
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]
 then
@@ -26,7 +26,7 @@ echo -e "\e[39m"
 
 #login
 echo "Testing login"
-response=$(curl localhost/login -d '{"username":"testuser", "password":"testpass"}' -H "Content-Type: application/json" -c saved-cookie)
+response=$(curl localhost/login -d '{"username":"followuser", "password":"followpass"}' -H "Content-Type: application/json" -c saved-cookie)
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]
 then
@@ -39,7 +39,7 @@ echo -e "\e[39m"
 
 #additem
 echo "Testing additem (WITHOUT parent or media)"
-response=$(curl localhost/additem -d '{"content":"test tweet", "type":"inventory"}' -H "Content-Type: application/json" -b saved-cookie)
+response=$(curl localhost/additem -d '{"content":"follow tweet", "type":"inventory"}' -H "Content-Type: application/json" -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$response")
 status=$(jq -r '.status' <<< $response)
 echo "id:" $itemid
@@ -68,7 +68,7 @@ echo -e "\e[39m"
 
 #additem with parent
 echo "Testing additem with parent"
-content=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "parent":'"\"$itemid\""'}' -H "Content-Type: application/json" -b saved-cookie)
+content=$(curl localhost/additem -d '{"content":"follow reply", "type":"inventory", "parent":'"\"$itemid\""'}' -H "Content-Type: application/json" -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$content")
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]
@@ -148,8 +148,8 @@ echo -e "\e[39m"
 
 #additem with media
 echo "Testing additem with parent and media"
-response=$(curl localhost/additem -d '{"content":"test reply", "type":"inventory", "media":'"[\"$itemid\"]"'}' -H "Content-Type: application/json" -b saved-cookie)
-itemid=$(jq -r '.id' <<< $response)
+response=$(curl localhost/additem -d '{"content":"follow reply", "type":"inventory", "media":'"[\"$itemid\"]"'}' -H "Content-Type: application/json" -b saved-cookie)
+itemid=$(jq -r '.id' <<< "$response")
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]
 then
@@ -158,32 +158,6 @@ else
     echo -e "\e[31mDidn't get status: 'OK'"
     echo $response
 fi
-echo -e "\e[39m"
-
-#follow
-echo "Testing follow"
-response=$(curl localhost/follow -d '{"username":"followuser"}' -H "Content-Type: application/json" -b saved-cookie)
-status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
-then
-    echo -e "\e[32mGot status: 'OK'"
-else
-    echo -e "\e[31mDidn't get status: 'OK'"
-    echo $response
-fi
-echo -e "\e[39m"
-
-#following
-echo "Testing following"
-response=$(curl localhost/user/testuser/following -b saved-cookie)
-status=$(jq -r '.status' <<< $response)
-if [ "$status" = "OK" ]
-then
-    echo -e "\e[32mGot status: 'OK'"
-else
-    echo -e "\e[31mDidn't get status: 'OK'"
-fi
-echo $response
 echo -e "\e[39m"
 
 #logout

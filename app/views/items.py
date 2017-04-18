@@ -6,6 +6,7 @@ from time import time
 from bson import ObjectId
 import sys
 from bson.json_util import dumps
+from uuid import uuid1
 
 class AddItem(MethodView):
     def post(self):
@@ -90,7 +91,7 @@ class Media(MethodView):
 
         rows = cassandra.execute(
             "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
-            (uuid.uuid1(), f.stream.read(), f.name(), f.mimetype)
+            (uuid1(), f.stream.read(), f.name(), f.mimetype)
         )
 
         if not rows:

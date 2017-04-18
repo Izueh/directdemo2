@@ -86,6 +86,17 @@ class Search(MethodView):
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 class Media(MethodView):
+    def get(self, id):
+        rows = cassandra.execute(
+            "SELECT * FROM media WHERE id = %s ",
+            (id,)
+        )
+
+        if not rows:
+            return jsonify({'status': 'error'})
+        else:
+            return jsonify({'status': 'OK'})
+
     def post(self):
         f = request.files['content']
 

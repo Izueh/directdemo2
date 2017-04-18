@@ -32,7 +32,7 @@ class Item(MethodView):
 
     def delete(self, id):
         result = db['items'].delete_one({'_id': ObjectId(id)});
-        # delete medias in cassandra
+        cassandra.execute('''DELETE FROM media WHERE id in %s''',result['media'])
         if result:
             return jsonify({'status': 'OK'})
         else:

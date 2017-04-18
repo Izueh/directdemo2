@@ -24,9 +24,7 @@
           sharding:
             clusterRole: configsvr
           replication:
-            replSetName: directdemocracy 
+            replSetName: conf 
     - name: restart mongod
       service: name=mongod state=restarted
-    - name: run replication set initiate
-      hosts: leadconfig
-      shell: mongo --shell /home/ubuntu/rsinit.js
+

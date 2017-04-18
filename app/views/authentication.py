@@ -31,9 +31,10 @@ class Login(MethodView):
 class Verify(MethodView):
     def post(self):
         json = request.get_json()
-        user = db.user.find_one({'email':json['email']})
         if(json['key']=='abracadabra'):
-            db.user.update(user,{'$set':{'validated':True}})
+            user = db.user.find_one({'email':json['email']})
+            user['validated'] = True
+            db.user.replace_one({'username':user['username']},user)
             return jsonify({'status':'OK'})
         return jsonify({'status':'ERROR'})
 class Logout(MethodView):

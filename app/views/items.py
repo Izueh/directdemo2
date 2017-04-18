@@ -58,7 +58,6 @@ class Item(MethodView):
 class Search(MethodView):
     def post(self):
         json = request.get_json()
-        f = open('log/search.txt','a')
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:

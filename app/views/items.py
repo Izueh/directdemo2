@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import request,jsonify,session, Response
 from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
-from db import db
+from db import db, cassandra
 from time import time
 from bson import ObjectId
 import sys
@@ -57,6 +57,7 @@ class Item(MethodView):
 class Search(MethodView):
     def post(self):
         json = request.get_json()
+        f = open('log/search.txt','a')
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:
@@ -83,9 +84,16 @@ class Search(MethodView):
         results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
-# post this shit to cassandra
 class Media(MethodView):
     def post(self):
-        json = request.get_json()
-        db.document.insert_one(json)
-        return jsonify(CODE_OK)
+        f = request.files['content']
+
+        rows = cassandra.execute(
+            "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
+            (uuid.uuid1(), f.stream.read(), f.name(), f.mimetype)
+        )
+
+        if not rows:
+            return jsonify({'status': 'error'})
+        else:
+            return jsonify({'status': 'OK'})

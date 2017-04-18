@@ -22,6 +22,7 @@ app.add_url_rule('/item/<id>', view_func=Item.as_view('item'),methods=['GET', 'D
 app.add_url_rule('/item/<id>/like',view_func=Item.as_view('like'),methods=['POST'])
 app.add_url_rule('/search', view_func=Search.as_view('search'),methods=['POST'])
 app.add_url_rule('/media', view_func=Media.as_view('media'),methods=['POST'])
+app.add_url_rule('/addmedia', view_func=Media.as_view('media'),methods=['POST'])
 app.add_url_rule('/user/<string:username>',defaults={'query':None},view_func=User.as_view('user'))
 app.add_url_rule('/user/<string:username>/<string:query>', view_func=User.as_view('followers'))
 #app.add_url_rule('/user/<string:username>/', view_func=Following.as_view('following'))

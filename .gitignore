@@ -3,3 +3,4 @@ venv/
 *.pyo
 .vscode/
 log.*
+*.retry

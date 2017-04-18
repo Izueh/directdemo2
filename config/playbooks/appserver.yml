@@ -14,7 +14,7 @@
       easy_install: name=pip executable=/usr/bin/easy_install3
     - name: copy app 
       become_user: ubuntu
-      copy: src=/home/ubuntu/directdemo2/app dest=/home/ubuntu/app 
+      copy: src=/home/ubuntu/directdemo2/app dest=/home/ubuntu/app force=yes
     - name: install libraries
       pip: requirements=/home/ubuntu/directdemo2/requirements.txt
     - name: install gunicorn

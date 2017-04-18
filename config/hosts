@@ -19,4 +19,7 @@
 192.168.1.27 ansible_python_interpreter=/usr/bin/python3 
 
 [leadshard]
-192.168.1.30 ansible_python_interpreter=/usr/bin/python3 
+192.168.1.30 ansible_python_interpreter=/usr/bin/python3
+
+[mongo]
+192.168.1.28 ansible_python_interpreter=/usr/bin/python3 

@@ -1,7 +1,7 @@
 ---
-- hosts: database
+- hosts: mongo
   remote_user: ubuntu
-  become: yes
+  becmoe: yes
   become_method: sudo
   tasks:
     - name: copy init
@@ -17,14 +17,8 @@
         state: present
     - name: install mongo
       apt: name=mongodb-org update_cache=yes
-    - name: modify mongod conf for sharding
-      blockinfile: 
-        dest: /etc/mongod.conf
-        block: |
-          sharding:
-            clusterRole: shardsvr 
-          replication:
-            replSetName: directdemocracyshards
     - name: restart mongod
       service: name=mongod state=restarted
-   
+
+ 
+

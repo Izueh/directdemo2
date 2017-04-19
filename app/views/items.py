@@ -13,10 +13,12 @@ class AddItem(MethodView):
         json = request.get_json()
         json['timestamp'] = time()
         json['username'] = session['username']
+        if 'parent' not in json:
+            json['parent'] = None
         result = db.items.insert_one(json)
         if result.acknowledged:
-            if 'parent' in json:
-                db.items.update_one({'_id':ObjectId(json['parent'])},{'replies':{'$push':json}})
+            if json['parent']:
+                db.items.update_one({'_id':ObjectId(json['parent'])},{'replies':{'$push':json}, '$inc': {'interest_score': 1} })
             return jsonify({'status': 'OK', 'id': str(result.inserted_id)})
         else:
             return jsonify(CODE_ERROR)
@@ -45,9 +47,11 @@ class Item(MethodView):
             if session['username'] in tweet['likes']:
                 return jsonify({'status': 'error','error':'user already likes this tweet'})
             tweet['likes'].append(session['username'])
+            tweet['interest_score'] = tweet['interest_score'] + 1
         else:
             if session['username'] in tweet['likes']:
                 tweet['likes'].pop(session['username'])
+                tweet['interest_score'] = tweet['interest_score'] - 1
             else:
                 return jsonify({'status':'error','error':'user has not liked this'})
         db.replace_one({'_id':tweet['_id']}, tweet)
@@ -78,14 +82,24 @@ class Search(MethodView):
             else:
                 query['username'] = username
         # my code        
-        query['parent'] = json['parent']
+        if 'parent' in json:
+            query['parent'] = json['parent']
         if not json['replies']:
             query['parent'] = None
         # endmy code        
         else:
             if following:
                 query['username'] = {'$in': following_list}
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}])
+
+        if not json['rank']:
+            json['rank'] = 'interest'
+
+        if json['rank'] == 'time':
+            sort_by = { 'timestamp': -1 }
+        else:
+            sort_by = { 'interest_score' : -1 }
+
+        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}], {'$sort': sort_by})
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 class Media(MethodView):

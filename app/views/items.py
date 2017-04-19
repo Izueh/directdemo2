@@ -77,7 +77,11 @@ class Search(MethodView):
                 query['username'] = username if username in following_list else ''
             else:
                 query['username'] = username
-                
+        # my code        
+        query['parent'] = json['parent']
+        if not json['replies']:
+            query['parent'] = None
+        # endmy code        
         else:
             if following:
                 query['username'] = {'$in': following_list}

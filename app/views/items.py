@@ -6,10 +6,8 @@ from time import time
 from bson import ObjectId
 import sys
 from bson.json_util import dumps
-from uuid import uuid1, UUID
+from uuid import uuid1
 from io import BytesIO
-from cassandra.query import BatchStatement, SimpleStatement
-from cassandra.policies import DowngradingConsistencyRetryPolicy
 
 class AddItem(MethodView):
     def post(self):
@@ -38,12 +36,7 @@ class Item(MethodView):
     def delete(self, id):
         result = db.items.find_one({'_id':ObjectId(id)})
         delete = db['items'].delete_one(result);
-        if 'media' in result:
-            batch = BatchStatement()
-            pr = cassandra.prepare('DELETE FROM media where id=?')
-            for x in result['media']:
-                batch.add(pr.bind((UUID(x),)))
-            cassandra.execute(batch)
+        cassandra.execute('''DELETE FROM media WHERE id in %s''',result['media'])
         if result:
             return jsonify({'status': 'OK'})
         else:
@@ -52,10 +45,6 @@ class Item(MethodView):
     def post(self, id):
         json = request.get_json()
         tweet = db.items.find_one({'_id':ObjectId(id)})
-        if 'likes' not in tweet:
-            tweet['likes'] = []
-        if 'interest_score' not in tweet:
-            tweet['interest_score'] = 0
         if json['like']:
             if session['username'] in tweet['likes']:
                 return jsonify({'status': 'error','error':'user already likes this tweet'})
@@ -114,20 +103,22 @@ class Search(MethodView):
         else:
             sort_by = { 'interest_score' : -1 }
 
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}, {'$sort': sort_by}])
+        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$sort': sort_by}, {'$limit': limit}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 class Media(MethodView):
     def get(self, id):
-        new_id = UUID(id)
+        new_id = uuid1(id)
         row = cassandra.execute(
             "SELECT * FROM media WHERE id = %s ",
             (new_id,)
         )
+
         if not row:
-            return jsonify(CODE_ERROR)
-        f = BytesIO(row[0].contents)
-        return send_file(f,attachment_filename=row[0].filename,mimetype=row[0].mimetype)
+            return jsonify({'status': 'error'})
+        else:
+            f = BytesIO(row[0].contents)
+            return send_file(f,attachment_filename=row[0].filename,mimetype=row[0].mimetype)
 
     def post(self):
         f = request.files['content']
@@ -138,4 +129,7 @@ class Media(MethodView):
             (new_id, f.stream.read(), f.name, f.mimetype)
         )
 
-        return jsonify({'status': 'OK', 'id': str(new_id)})
+        if not rows:
+            return jsonify(CODE_ERROR)
+        else:
+            return jsonify({'status': 'OK', 'id': str(new_id)})

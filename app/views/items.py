@@ -101,7 +101,7 @@ class Search(MethodView):
         else:
             sort_by = { 'interest_score' : -1 }
 
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}], {'$sort': sort_by})
+        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}, {'$sort': sort_by}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 class Media(MethodView):

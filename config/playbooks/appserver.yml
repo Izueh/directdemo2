@@ -14,6 +14,8 @@
       easy_install: name=pip executable=/usr/bin/easy_install3
     - name: delete app
       file: state=absent path=/home/ubuntu/app
+    - name: make log directory
+      file: state=dir path=/home/ubuntu/log
     - name: delete directdemo2
       file: state=absent path=/home/ubuntu/directdemo2
     - name: copy app 

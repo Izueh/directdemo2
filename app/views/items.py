@@ -19,7 +19,7 @@ class AddItem(MethodView):
         result = db.items.insert_one(json)
         if result.acknowledged:
             if json['parent']:
-                db.items.update_one({'_id':ObjectId(json['parent'])},{'replies':{'$push':json}, '$inc': {'interest_score': 1} })
+                db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
             return jsonify({'status': 'OK', 'id': str(result.inserted_id)})
         else:
             return jsonify(CODE_ERROR)
@@ -56,7 +56,7 @@ class Item(MethodView):
                 tweet['interest_score'] = tweet['interest_score'] - 1
             else:
                 return jsonify({'status':'error','error':'user has not liked this'})
-        db.replace_one({'_id':tweet['_id']}, tweet)
+        db.items.replace_one({'_id':tweet['_id']}, tweet)
         return jsonify({'status': 'OK'})
 
 # Search seems to be only related to tweets at least for their api,

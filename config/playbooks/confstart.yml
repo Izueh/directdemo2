@@ -1,0 +1,7 @@
+---
+- hosts: configleader 
+  remote_user: ubuntu
+  tasks:
+    - name: initialize config server
+      command: /usr/bin/mongo /home/ubuntu/rsinit.js
+

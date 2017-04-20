@@ -1,0 +1,2 @@
+sharding:
+  configDB: conf/appserver-1:27017,appserver-2:27017,appserver-3:27017

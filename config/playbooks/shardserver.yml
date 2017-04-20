@@ -4,8 +4,6 @@
   become: yes
   become_method: sudo
   tasks:
-    - name: copy init
-      copy: src=/home/ubuntu/directdemo2/config/playbooks/rsinit.js dest=/home/ubuntu
     - name: get mongo key 
       apt_key:
         keyserver: hkp://keyserver.ubuntu.com:80
@@ -17,14 +15,22 @@
         state: present
     - name: install mongo
       apt: name=mongodb-org update_cache=yes
+    - name: delete
+      lineinfile:
+        regexp: 'clusterRole.*'
+        dest: /etc/mongod.conf
+        state: absent
     - name: modify mongod conf for sharding
       blockinfile: 
         dest: /etc/mongod.conf
         block: |
           sharding:
             clusterRole: shardsvr 
-          replication:
-            replSetName: directdemocracyshards
+    - name: remove bindIP
+      lineinfile: 
+        regexp: 'bindIp.*' 
+        state: absent
+        dest: /etc/mongod.conf
     - name: restart mongod
       service: name=mongod state=restarted
    

@@ -1,0 +1,12 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: check log directory exists
+      file: path=/home/ubuntu/log state=directory
+    - name: remove old top log
+      file: path=/home/ubuntu/log/toplog state=absent
+    - name: log top
+      shell: nohup top -b -d 60 > /home/ubuntu/log/toplog &

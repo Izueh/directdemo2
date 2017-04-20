@@ -1,25 +1,28 @@
 [loadbalancer]
 
 [application]
-192.168.1.20 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.21 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.22 ansible_python_interpreter=/usr/bin/python3 
-appserver-4 ansible_python_interpreter=/usr/bin/python3 
+appserver-1 ansible_python_interpreter=/usr/bin/python3 
+appserver-2 ansible_python_interpreter=/usr/bin/python3 
+appserver-3 ansible_python_interpreter=/usr/bin/python3 
+
 [database]
-192.168.1.24 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.23 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.30 ansible_python_interpreter=/usr/bin/python3 
+dbserver-1 ansible_python_interpreter=/usr/bin/python3 
+dbserver-2 ansible_python_interpreter=/usr/bin/python3 
+dbserver-3 ansible_python_interpreter=/usr/bin/python3 
+dbserver-4 ansible_python_interpreter=/usr/bin/python3 
+dbserver-5 ansible_python_interpreter=/usr/bin/python3 
+dbserver-6 ansible_python_interpreter=/usr/bin/python3 
+dbserver-7 ansible_python_interpreter=/usr/bin/python3 
+dbserver-8 ansible_python_interpreter=/usr/bin/python3 
+dbserver-9 ansible_python_interpreter=/usr/bin/python3 
+dbserver-10 ansible_python_interpreter=/usr/bin/python3 
 
-[configservers]
-192.168.1.27 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.28 ansible_python_interpreter=/usr/bin/python3 
-192.168.1.29 ansible_python_interpreter=/usr/bin/python3 
+[route]
+dbrouter ansible_python_interpreter=/usr/bin/python3 
 
-[leadconfig]
-192.168.1.27 ansible_python_interpreter=/usr/bin/python3 
 
-[leadshard]
-192.168.1.30 ansible_python_interpreter=/usr/bin/python3
+[cassandra]
+cassandra ansible_python_interpreter=/usr/bin/python3 
 
-[mongo]
-192.168.1.28 ansible_python_interpreter=/usr/bin/python3 
+[configleader]
+appserver-3 ansible_python_interpreter=/usr/bin/python3 

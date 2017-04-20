@@ -1,5 +1,5 @@
 ---
-- hosts: configservers
+- hosts: application
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -17,6 +17,11 @@
         state: present
     - name: install mongo
       apt: name=mongodb-org update_cache=yes
+    - name: remove bindIp
+      lineinfile:
+        regexp: 'bindIp.*'
+        state: absent
+        dest: /etc/mongod.conf
     - name: modify mongod conf for sharding
       blockinfile: 
         dest: /etc/mongod.conf

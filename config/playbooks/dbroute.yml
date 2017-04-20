@@ -1,0 +1,40 @@
+---
+- hosts: route 
+  remote_user: ubuntu
+  tasks:
+    - name: get mongo key 
+      become: yes
+      become_method: sudo
+      apt_key:
+        keyserver: hkp://keyserver.ubuntu.com:80
+        id: 0C49F3730359A14518585931BC711F9BA15703C6
+        state: present
+    - name: add mongo to sources list
+      become: yes
+      become_method: sudo    
+      apt_repository: 
+        repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+        state: present
+    - name: install mongo
+      become: yes
+      become_method: sudo
+      apt: name=mongodb-org update_cache=yes
+    - name: remove bindIP
+      become: yes
+      become_method: sudo     
+      lineinfile: 
+        regexp: 'bindIp.*' 
+        state: absent
+        dest: /etc/mongod.conf
+    - name: restart mongod
+      become: yes
+      become_method: sudo     
+      service: name=mongod state=stopped
+    - name: copy config 
+      copy: src=/home/ubuntu/directdemo2/config/routeconfig dest=/home/ubuntu
+    - name: copy init script
+      copy: src=/home/ubuntu/directdemo2/config/routeinit.js dest=/home/ubuntu
+    - name: start mongos
+      shell: /usr/bin/mongos --config /home/ubuntu/routeconfig&
+    - name: start
+      command: /usr/bin/mongo /home/ubuntu/routeinit.js

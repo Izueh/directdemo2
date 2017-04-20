@@ -124,7 +124,10 @@ class Media(MethodView):
 
         rows = cassandra.execute(
             "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
-            (new_id, f.stream.read(), f.name(), f.mimetype)
+            (new_id, 
+            f.stream.read(), 
+            f.name(), 
+            f.mimetype)
         )
 
         if not rows:

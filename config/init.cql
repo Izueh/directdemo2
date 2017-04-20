@@ -4,6 +4,6 @@ CREATE TABLE IF NOT EXISTS media (
     filename text,
     contents blob,
     mimetype text,
-    id uuid
-    PRIMARY_KEY(id)
+    id uuid,
+    PRIMARY KEY(id)
 );

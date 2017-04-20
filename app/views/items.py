@@ -85,6 +85,8 @@ class Search(MethodView):
         # my code        
         if 'parent' in json:
             query['parent'] = json['parent']
+        if 'replies' not in json:
+            json['replies'] = True
         if not json['replies']:
             query['parent'] = None
         # endmy code        
@@ -92,7 +94,7 @@ class Search(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
 
-        if not json['rank']:
+        if 'rank' not in json:
             json['rank'] = 'interest'
 
         if json['rank'] == 'time':
@@ -100,7 +102,7 @@ class Search(MethodView):
         else:
             sort_by = { 'interest_score' : -1 }
 
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$limit': limit}], {'$sort': sort_by})
+        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$sort': sort_by}, {'$limit': limit}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 class Media(MethodView):

@@ -124,13 +124,10 @@ class Media(MethodView):
 
         rows = cassandra.execute(
             "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
-            (new_id, 
-            f.stream.read(), 
-            f.name(), 
-            f.mimetype)
+            (str(new_id), f.stream.read(), f.name(), f.mimetype)
         )
 
         if not rows:
             return jsonify(CODE_ERROR)
         else:
-            return jsonify({'status': 'OK', 'id': new_id})
+            return jsonify({'status': 'OK', 'id': str(new_id)})

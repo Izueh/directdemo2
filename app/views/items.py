@@ -6,8 +6,9 @@ from time import time
 from bson import ObjectId
 import sys
 from bson.json_util import dumps
-from uuid import uuid1
+from uuid import uuid1, UUID
 from io import BytesIO
+from cassandra.query import BatchStatement
 
 class AddItem(MethodView):
     def post(self):
@@ -36,7 +37,12 @@ class Item(MethodView):
     def delete(self, id):
         result = db.items.find_one({'_id':ObjectId(id)})
         delete = db['items'].delete_one(result);
-        cassandra.execute('''DELETE FROM media WHERE id in %s''',result['media'])
+        if 'media' in result:
+            pr = cassandra.prepared('DELETE FROM media WHERE id=?')
+            b = BatchStatement()
+            for x in result['media']:
+                b.add(pr.bind((UUID(x),)))
+            
         if result:
             return jsonify({'status': 'OK'})
         else:
@@ -108,7 +114,7 @@ class Search(MethodView):
 
 class Media(MethodView):
     def get(self, id):
-        new_id = uuid1(id)
+        new_id = UUID(id)
         row = cassandra.execute(
             "SELECT * FROM media WHERE id = %s ",
             (new_id,)

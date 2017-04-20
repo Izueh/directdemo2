@@ -93,7 +93,7 @@ class Search(MethodView):
             if following:
                 query['username'] = {'$in': following_list}
 
-        if not json['rank']:
+        if 'rank' not in json:
             json['rank'] = 'interest'
 
         if json['rank'] == 'time':

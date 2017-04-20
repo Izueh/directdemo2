@@ -34,7 +34,8 @@ class Item(MethodView):
             return jsonify(CODE_ERROR)
 
     def delete(self, id):
-        result = db['items'].delete_one({'_id': ObjectId(id)});
+        result = db.items.find_one({'_id':ObjectId(id)})
+        delete = db['items'].delete_one(result);
         cassandra.execute('''DELETE FROM media WHERE id in %s''',result['media'])
         if result:
             return jsonify({'status': 'OK'})
@@ -108,12 +109,12 @@ class Search(MethodView):
 class Media(MethodView):
     def get(self, id):
         new_id = uuid1(id)
-        rows = cassandra.execute(
+        row = cassandra.execute(
             "SELECT * FROM media WHERE id = %s ",
             (new_id,)
         )
 
-        if not rows:
+        if not row:
             return jsonify({'status': 'error'})
         else:
             f = BytesIO(row[0].contents)

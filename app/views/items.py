@@ -84,6 +84,8 @@ class Search(MethodView):
         # my code        
         if 'parent' in json:
             query['parent'] = json['parent']
+        if 'replies' not in json:
+            json['replies'] = True
         if not json['replies']:
             query['parent'] = None
         # endmy code        

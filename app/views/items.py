@@ -107,9 +107,10 @@ class Search(MethodView):
 
 class Media(MethodView):
     def get(self, id):
+        new_id = uuid1(id)
         rows = cassandra.execute(
             "SELECT * FROM media WHERE id = %s ",
-            (id,)
+            (new_id,)
         )
 
         if not rows:
@@ -124,7 +125,7 @@ class Media(MethodView):
 
         rows = cassandra.execute(
             "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
-            (str(new_id), f.stream.read(), f.name(), f.mimetype)
+            (new_id, f.stream.read(), f.name, f.mimetype)
         )
 
         if not rows:

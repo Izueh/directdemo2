@@ -4,7 +4,7 @@
 192.168.1.20 ansible_python_interpreter=/usr/bin/python3 
 192.168.1.21 ansible_python_interpreter=/usr/bin/python3 
 192.168.1.22 ansible_python_interpreter=/usr/bin/python3 
-
+appserver-4 ansible_python_interpreter=/usr/bin/python3 
 [database]
 192.168.1.24 ansible_python_interpreter=/usr/bin/python3 
 192.168.1.23 ansible_python_interpreter=/usr/bin/python3 

@@ -1,5 +1,5 @@
 ---
-- hosts: application
+- hosts: config 
   remote_user: ubuntu
   become: yes
   become_method: sudo

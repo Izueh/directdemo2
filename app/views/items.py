@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import request,jsonify,session, Response, send_file
 from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
-from db import db, cassandra
+from db import db, fs, cassandra
 from time import time
 from bson import ObjectId
 import sys
@@ -17,11 +17,15 @@ class AddItem(MethodView):
         json['username'] = session['username']
         if 'parent' not in json:
             json['parent'] = None
+        obj_id = ObjectId()
+        json['_id'] = obj_id
+        json['id'] = str(obj_id)
         result = db.items.insert_one(json)
         if result.acknowledged:
             if json['parent']:
+                json['_id']=json['id']
                 db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
-            return jsonify({'status': 'OK', 'id': str(result.inserted_id)})
+            return jsonify({'status': 'OK', 'id': str(obj_id)})
         else:
             return jsonify(CODE_ERROR)
 
@@ -38,11 +42,8 @@ class Item(MethodView):
         result = db.items.find_one({'_id':ObjectId(id)})
         delete = db['items'].delete_one(result);
         if 'media' in result:
-            pr = cassandra.prepared('DELETE FROM media WHERE id=?')
-            b = BatchStatement()
             for x in result['media']:
-                b.add(pr.bind((UUID(x),)))
-            
+                fs.delete(ObjectId(x))
         if result:
             return jsonify({'status': 'OK'})
         else:
@@ -51,6 +52,10 @@ class Item(MethodView):
     def post(self, id):
         json = request.get_json()
         tweet = db.items.find_one({'_id':ObjectId(id)})
+        if 'likes' not in tweet:
+            tweet['likes']=[]
+        if 'interest_score' not in tweet:
+            tweet['interest_score']=0
         if json['like']:
             if session['username'] in tweet['likes']:
                 return jsonify({'status': 'error','error':'user already likes this tweet'})
@@ -80,7 +85,7 @@ class Search(MethodView):
         timestamp = json.pop('timestamp') if 'timestamp' in json else time()
         search = 'q' in json
         limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
-        following_list = db.user.find_one({'username':session['username']})['following']
+        following_list = db.user.find_one({'username':session['username']})['following'] # do we only need this is following=true?
         query = {'timestamp':{'$lte':timestamp}}
         if search:
             query['$text'] = {'$search':json['q']}
@@ -105,14 +110,17 @@ class Search(MethodView):
             json['rank'] = 'interest'
 
         if json['rank'] == 'time':
-            sort_by = { 'timestamp': -1 }
+            sort_key = 'timestamp'
         else:
-            sort_by = { 'interest_score' : -1 }
+            sort_key = 'interest_score'
+        sort_dir = -1
 
-        results = db.items.aggregate([{'$match':query}, {'$addFields':{'id':'$_id'}}, {'$sort': sort_by}, {'$limit': limit}])
+        results = db.items.find(query).sort(sort_key, sort_dir).limit(limit)
+        #results = db.items.find(filter=query, limit=limit, sort=sort_by)
+        #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
-class Media(MethodView):
+class ShitMedia(MethodView):
     def get(self, id):
         new_id = UUID(id)
         row = cassandra.execute(
@@ -130,12 +138,20 @@ class Media(MethodView):
         f = request.files['content']
         new_id = uuid1()
 
-        rows = cassandra.execute(
+        cassandra.execute(
             "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
             (new_id, f.stream.read(), f.name, f.mimetype)
         )
 
-        if not rows:
-            return jsonify(CODE_ERROR)
-        else:
-            return jsonify({'status': 'OK', 'id': str(new_id)})
+        return jsonify({'status': 'OK', 'id': str(new_id)})
+
+class Media(MethodView):
+    def post(self):
+        f = request.files['content']
+        new_id = fs.put(f, content_type=f.mimetype)
+        return jsonify({'status':'OK','id':str(new_id)})
+
+    def get(self,id):
+        f = fs.get(ObjectId(id))
+        return send_file(f,mimetype=f.content_type)
+       

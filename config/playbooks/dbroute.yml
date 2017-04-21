@@ -35,6 +35,6 @@
     - name: copy init script
       copy: src=/home/ubuntu/directdemo2/config/routeinit.js dest=/home/ubuntu
     - name: start mongos
-      shell: /usr/bin/mongos --config /home/ubuntu/routeconfig&
+      shell: /usr/bin/mongos --config /home/ubuntu/routeconfig &
     - name: start
       command: /usr/bin/mongo /home/ubuntu/routeinit.js

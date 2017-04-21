@@ -4,6 +4,8 @@
   become: yes
   become_method: sudo
   tasks:
+    - name: delete old log
+      file: state=absent path=/home/ubuntu/log
     - name: install dependencies
       apt: name={{item}} state=latest update_cache=yes
       with_items:
@@ -15,6 +17,7 @@
     - name: delete app
       file: state=absent path=/home/ubuntu/app
     - name: make log directory
+      become: no
       file: state=directory path=/home/ubuntu/log
     - name: delete directdemo2
       file: state=absent path=/home/ubuntu/directdemo2

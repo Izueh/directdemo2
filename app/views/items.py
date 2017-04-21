@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import request,jsonify,session, Response, send_file
 from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
-from db import db, fs, cassandra
+from db import db, fs
 from time import time
 from bson import ObjectId
 import sys
@@ -43,7 +43,10 @@ class Item(MethodView):
         delete = db['items'].delete_one(result);
         if 'media' in result:
             for x in result['media']:
-                fs.delete(ObjectId(x))
+                try:
+                    fs.delete(ObjectId(x))
+                except:
+                    pass
         if result:
             return jsonify({'status': 'OK'})
         else:
@@ -120,30 +123,30 @@ class Search(MethodView):
         #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
-class ShitMedia(MethodView):
-    def get(self, id):
-        new_id = UUID(id)
-        row = cassandra.execute(
-            "SELECT * FROM media WHERE id = %s ",
-            (new_id,)
-        )
+#class ShitMedia(MethodView):
+    #def get(self, id):
+        #new_id = UUID(id)
+        #row = cassandra.execute(
+            #"SELECT * FROM media WHERE id = %s ",
+            #(new_id,)
+        #)
 
-        if not row:
-            return jsonify({'status': 'error'})
-        else:
-            f = BytesIO(row[0].contents)
-            return send_file(f,attachment_filename=row[0].filename,mimetype=row[0].mimetype)
+        #if not row:
+            #return jsonify({'status': 'error'})
+        #else:
+            #f = BytesIO(row[0].contents)
+            #return send_file(f,attachment_filename=row[0].filename,mimetype=row[0].mimetype)
 
-    def post(self):
-        f = request.files['content']
-        new_id = uuid1()
+    #def post(self):
+        #f = request.files['content']
+        #new_id = uuid1()
 
-        cassandra.execute(
-            "INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
-            (new_id, f.stream.read(), f.name, f.mimetype)
-        )
+        #cassandra.execute(
+            #"INSERT INTO media (id, contents, filename, mimetype) VALUES (%s,%s,%s,%s)", 
+            #(new_id, f.stream.read(), f.name, f.mimetype)
+        #)
 
-        return jsonify({'status': 'OK', 'id': str(new_id)})
+        #return jsonify({'status': 'OK', 'id': str(new_id)})
 
 class Media(MethodView):
     def post(self):
@@ -152,6 +155,10 @@ class Media(MethodView):
         return jsonify({'status':'OK','id':str(new_id)})
 
     def get(self,id):
-        f = fs.get(ObjectId(id))
-        return send_file(f,mimetype=f.content_type)
+        try:
+            f = fs.get(ObjectId(id))
+            return send_file(f,mimetype=f.content_type)
+        except:
+            return jsonify({'status':'error','error':'file not present'})
+            
        

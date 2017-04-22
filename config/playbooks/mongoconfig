@@ -1,0 +1,4 @@
+sharding:
+  cluesterRole: shardsvr
+replication:
+  replSetName: r{{ number }}

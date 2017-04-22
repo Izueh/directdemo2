@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+import eventlet.wsgi
 from flask import Flask, request, session
 from pymongo import MongoClient
 from views.authentication import AddUser, Login, Logout, Verify
@@ -12,6 +15,8 @@ app.secret_key = 'secret sezchuan sauce'
 gunicorn_error_logger = logging.getLogger('log/gunicorn-error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
 app.logger.setLevel(logging.DEBUG)
+eventlet_socket = eventlet.listen(('',5000))
+
 
 app.add_url_rule('/adduser', view_func=AddUser.as_view('adduser'),methods=['POST'])
 app.add_url_rule('/login', view_func=Login.as_view('login'),methods=['POST'])
@@ -34,6 +39,4 @@ def log_request_info():
     app.logger.debug('Body: %s', request.get_data())
 
 if __name__ == '__main__':
-    app.config['DEBUG']=True
-    app.run()
-
+    eventlet.wsgi.server(eventlet_socket,app)

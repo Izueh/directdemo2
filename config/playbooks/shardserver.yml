@@ -26,6 +26,8 @@
         block: |
           sharding:
             clusterRole: shardsvr 
+          replication:
+            replSetName: rx
     - name: remove bindIP
       lineinfile: 
         regexp: 'bindIp.*' 

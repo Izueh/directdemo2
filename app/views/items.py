@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import request,jsonify,session, Response, send_file
 from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
-from db import db, fs
+from db import db, fs, es
 from time import time
 from bson import ObjectId
 import sys
@@ -9,6 +9,7 @@ from bson.json_util import dumps
 from uuid import uuid1, UUID
 from io import BytesIO
 from cassandra.query import BatchStatement
+from elasticsearch_dsl import Search
 
 class AddItem(MethodView):
     def post(self):
@@ -97,6 +98,9 @@ class Search(MethodView):
                 query['username'] = username if username in following_list else ''
             else:
                 query['username'] = username
+        else:
+            if following:
+                query['username'] = {'$in': following_list}
         # my code        
         if 'parent' in json:
             query['parent'] = json['parent']
@@ -105,10 +109,7 @@ class Search(MethodView):
         if not json['replies']:
             query['parent'] = None
         # endmy code        
-        else:
-            if following:
-                query['username'] = {'$in': following_list}
-
+        
         if 'rank' not in json:
             json['rank'] = 'interest'
 
@@ -118,9 +119,9 @@ class Search(MethodView):
             sort_key = 'interest_score'
         sort_dir = -1
 
-        results = db.items.find(query).sort(sort_key, sort_dir).limit(limit)
+        #results = db.items.find(query).sort(sort_key, sort_dir).limit(limit)
         #results = db.items.find(filter=query, limit=limit, sort=sort_by)
-        #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
+        results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 #class ShitMedia(MethodView):
@@ -147,6 +148,66 @@ class Search(MethodView):
         #)
 
         #return jsonify({'status': 'OK', 'id': str(new_id)})
+class YASearch:
+    def post(self):
+        s = Search(using=es,index=twitter,doc_type)
+        json = request.get_json()
+        username = json.pop('username') if 'username' in json else None
+        following = True
+        if 'following' in json:
+            following = json.pop('following')
+        else:
+            if username:
+                following = True
+        timestamp = json.pop('timestamp') if 'timestamp' in json else time()
+        search = 'q' in json
+        limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
+        following_list = db.user.find_one({'username':session['username']})['following'] # do we only need this is following=true?
+        #query = {'timestamp':{'$lte':timestamp}}
+        s = s.filter('range', timestamp={'lte':timestamp})
+        if search:
+            #query['$text'] = {'$search':json['q']}
+            s = s.query('match', content=json['q'])
+        if username:
+            if following:
+                query['username'] = username if username in following_list else ''
+                s = s.filter('term',username=query['username'])
+            else:
+                #query['username'] = username
+                s =s.filter('term',username=username)
+        else:
+            if following:
+                #query['username'] = {'$in': following_list}
+                s = s.filter('terms',username=following_list)
+        # my code        
+        if 'parent' in json:
+            #query['parent'] = json['parent']
+            s = s.filter('term', parent=json['parent'])
+        if 'replies' not in json:
+            json['replies'] = True
+        if not json['replies']:
+            query['parent'] = None
+            s = s.filter('term', parent=None)
+        # endmy code        
+        if 'rank' not in json:
+            json['rank'] = 'interest'
+        s =s[0:limit]
+
+        if json['rank'] == 'time':
+            sort_key = 'timestamp'
+            s = s.sort('-timestamp')
+        else:
+            sort_key = 'interest_score'
+            s = s.sort('-interest_score')
+        #sort_dir = -1
+
+        #results = db.items.find(query).sort(sort_key, sort_dir).limit(limit)
+        #results = db.items.find(filter=query, limit=limit, sort=sort_by)
+        #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
+        results = s.execute()
+        return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
+
+
 
 class Media(MethodView):
     def post(self):

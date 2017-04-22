@@ -26,6 +26,12 @@
       copy: src=/home/ubuntu/directdemo2/app dest=/home/ubuntu force=yes
     - name: install libraries
       pip: requirements=/home/ubuntu/app/requirements.txt
+    - name: install eventlent and green let
+      pip: name=eventlet
+    - name: install es
+      pip: name=elasticsearch
+    - name: install es_dsl
+      pip: name=elasticsearch_dsl
     - name: copy service script
       copy: 
         src: /home/ubuntu/directdemo2/config/gunicorn.service 

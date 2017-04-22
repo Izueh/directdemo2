@@ -4,7 +4,6 @@
 appserver-1 ansible_python_interpreter=/usr/bin/python3 
 appserver-2 ansible_python_interpreter=/usr/bin/python3 
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
-appserver-4 ansible_python_interpreter=/usr/bin/python3 
 
 [database]
 dbserver-1 ansible_python_interpreter=/usr/bin/python3 
@@ -12,7 +11,7 @@ dbserver-2 ansible_python_interpreter=/usr/bin/python3
 dbserver-3 ansible_python_interpreter=/usr/bin/python3 
 
 [route]
-dbrouter ansible_python_interpreter=/usr/bin/python3 
+loadbalancer ansible_python_interpreter=/usr/bin/python3 
 
 [cassandra]
 cassandra ansible_python_interpreter=/usr/bin/python3 

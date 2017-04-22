@@ -40,7 +40,7 @@ class Item(MethodView):
 
     def delete(self, id):
         result = db.items.find_one({'_id':ObjectId(id)})
-        delete = db['items'].delete_one(result);
+        delete = db['items'].delete_one(result)
         if 'media' in result:
             for x in result['media']:
                 try:
@@ -148,7 +148,7 @@ class OldSearch(MethodView):
 
         #return jsonify({'status': 'OK', 'id': str(new_id)})
 
-class Search(MethodView):
+class eSearch(MethodView):
     def post(self):
         json = request.get_json()
         s = Search(using=es,index='twitter',doc_type='items')
@@ -163,7 +163,7 @@ class Search(MethodView):
         search = 'q' in json
         limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
         following_list = db.user.find_one({'username':session['username']})['following'] # do we only need this is following=true?
-        #query = {'timestamp':{'$lte':timestamp}}
+        query = {'timestamp':{'$lte':timestamp}}
         s = s.filter('range', timestamp={'lte':timestamp})
         if search:
             #query['$text'] = {'$search':json['q']}

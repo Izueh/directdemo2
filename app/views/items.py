@@ -1,4 +1,5 @@
 from flask.views import MethodView
+from elasticsearch_dsl import Search
 from flask import request,jsonify,session, Response, send_file
 from messages import CODE_ERROR, CODE_OK, NOT_LOGGED_IN
 from db import db, fs, es
@@ -8,8 +9,6 @@ import sys
 from bson.json_util import dumps
 from uuid import uuid1, UUID
 from io import BytesIO
-from cassandra.query import BatchStatement
-from elasticsearch_dsl import Search
 
 class AddItem(MethodView):
     def post(self):
@@ -76,7 +75,7 @@ class Item(MethodView):
 
 # Search seems to be only related to tweets at least for their api,
 # we could just have this implementation to conform to their api.
-class Search(MethodView):
+class OldSearch(MethodView):
     def post(self):
         json = request.get_json()
         username = json.pop('username') if 'username' in json else None
@@ -121,7 +120,7 @@ class Search(MethodView):
 
         #results = db.items.find(query).sort(sort_key, sort_dir).limit(limit)
         #results = db.items.find(filter=query, limit=limit, sort=sort_by)
-        results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
+        results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': {sort_key:sort_dir}}])
         return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
 
 #class ShitMedia(MethodView):
@@ -148,10 +147,11 @@ class Search(MethodView):
         #)
 
         #return jsonify({'status': 'OK', 'id': str(new_id)})
-class YASearch:
+
+class Search(MethodView):
     def post(self):
-        s = Search(using=es,index=twitter,doc_type)
         json = request.get_json()
+        s = Search(using=es,index='twitter',doc_type='items')
         username = json.pop('username') if 'username' in json else None
         following = True
         if 'following' in json:

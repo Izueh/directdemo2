@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from gridfs import GridFS
 from elasticsearch import Elasticsearch
 
-client = MongoClient('loadbalancer',27017)
+client = MongoClient('localhost',27017)
 db = client.twitter
 fs = GridFS(db)
 es = Elasticsearch('search')

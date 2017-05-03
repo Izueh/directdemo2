@@ -1,0 +1,32 @@
+---
+  - hosts: search
+    remote_user: ubuntu
+    become: yes
+    become_method: sudo
+    tasks: 
+      - name: download es
+        get_url:
+            url: https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.3.2.deb
+            dest: /home/ubuntu/es.deb
+      - name: install es
+        apt: deb=/home/ubuntu/es.deb
+      - name: start es
+        service: name=elasticsearch state=restarted
+      - name: install mongo connector
+        apt: name={{ item }} state=present update_cache=yes
+        with_items:
+          - python3
+          - python3-setuptools
+      - name: install pip
+        easy_install: 
+          name: pip
+          state: present
+          executable: /usr/bin/easy_install3
+      - name: install mongoconnector
+        pip:
+          name: mongo-connector[elastic5]
+          state: present
+
+
+    
+        

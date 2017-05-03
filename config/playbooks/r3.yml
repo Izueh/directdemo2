@@ -1,0 +1,41 @@
+---
+- hosts: database3
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: get mongo key 
+      apt_key:
+        keyserver: hkp://keyserver.ubuntu.com:80
+        id: 0C49F3730359A14518585931BC711F9BA15703C6
+        state: present
+    - name: add mongo to sources list
+      apt_repository: 
+        repo: deb [ arch=amd64,arm64 ] http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse
+        state: present
+    - name: install mongo
+      apt: name=mongodb-org update_cache=yes
+    - name: delete
+      lineinfile:
+        regexp: 'clusterRole.*'
+        dest: /etc/mongod.conf
+        state: absent
+    - name: modify mongod conf for sharding
+      blockinfile: 
+        dest: /etc/mongod.conf
+        block: |
+          sharding:
+            clusterRole: shardsvr 
+          replication:
+            replSetName: r3
+    - name: remove bindIP
+      lineinfile: 
+        regexp: 'bindIp.*' 
+        state: absent
+        dest: /etc/mongod.conf
+    - name: restart mongod
+      service: name=mongod state=restarted
+    - name: init
+      shell: mongo --eval "rs.init()"
+
+   

@@ -1,5 +1,5 @@
 ---
-- hosts: database
+- hosts: database2
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -27,7 +27,7 @@
           sharding:
             clusterRole: shardsvr 
           replication:
-            replSetName: rx
+            replSetName: r2
     - name: remove bindIP
       lineinfile: 
         regexp: 'bindIp.*' 
@@ -35,4 +35,7 @@
         dest: /etc/mongod.conf
     - name: restart mongod
       service: name=mongod state=restarted
+    - name: init
+      shell: mongo --eval "rs.init()"
+
    

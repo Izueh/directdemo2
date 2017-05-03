@@ -22,9 +22,9 @@ class AddItem(MethodView):
         json['id'] = str(obj_id)
         result = db.items.insert_one(json)
         if result.acknowledged:
-            if json['parent']:
-                json['_id']=json['id']
-                db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
+            #if json['parent']:
+                #json['_id']=json['id']
+                #db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
             return jsonify({'status': 'OK', 'id': str(obj_id)})
         else:
             return jsonify(CODE_ERROR)
@@ -148,7 +148,7 @@ class OldSearch(MethodView):
 
         #return jsonify({'status': 'OK', 'id': str(new_id)})
 
-class Search(MethodView):
+class ESearch(MethodView):
     def post(self):
         json = request.get_json()
         s = Search(using=es,index='twitter',doc_type='items')
@@ -205,7 +205,8 @@ class Search(MethodView):
         #results = db.items.find(filter=query, limit=limit, sort=sort_by)
         #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
         results = s.execute()
-        return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
+        l = [x['_source'].to_dict() for x in results['hits']['hits']]
+        return Response(response = dumps({'status':'OK','items':l}),mimetype='application/json')
 
 
 

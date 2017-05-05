@@ -13,14 +13,20 @@ from io import BytesIO
 class AddItem(MethodView):
     def post(self):
         json = request.get_json()
-        json['timestamp'] = time()
-        json['username'] = session['username']
+        item = {}
+        item['content'] = json['content']
+        item['timestamp'] = time()
+        item['username'] = session['username']
         if 'parent' not in json:
-            json['parent'] = None
+            item['parent'] = None
+        else:
+            item['parent']=json['parent']
+        if 'media' in json:
+            item['media']=json['media']
         obj_id = ObjectId()
-        json['_id'] = obj_id
-        json['id'] = str(obj_id)
-        result = db.items.insert_one(json)
+        item['_id'] = obj_id
+        item['id'] = str(obj_id)
+        result = db.items.insert_one(item)
         if result.acknowledged:
             #if json['parent']:
                 #json['_id']=json['id']

@@ -45,18 +45,15 @@ class Item(MethodView):
             return jsonify(CODE_ERROR)
 
     def delete(self, id):
-        result = db.items.find_one({'_id':ObjectId(id)})
-        delete = db['items'].delete_one(result);
+        result = db['items'].find_one_and_delete({"_id":ObjectId(id)})
         if 'media' in result:
-            for x in result['media']:
-                try:
-                    fs.delete(ObjectId(x))
-                except:
-                    pass
+            media = list(map(lambda x:ObjectId(x),result['media']))
+            if media:
+                db.media.delete_many({"_id":{"$in":media}})
         if result:
             return jsonify({'status': 'OK'})
         else:
-            return jsonify({'status': 'error'})
+            return jsonify({'status': 'error', "error":"not found"})
 
     def post(self, id):
         json = request.get_json()
@@ -216,7 +213,7 @@ class ESearch(MethodView):
 
 
 
-class Media(MethodView):
+class OldMedia(MethodView):
     def post(self):
         f = request.files['content']
         new_id = fs.put(f, content_type=f.mimetype)
@@ -229,4 +226,22 @@ class Media(MethodView):
         except:
             return jsonify({'status':'error','error':'file not present'})
             
-       
+class Media(MethodView):
+    def post(self):
+        f = request.files['content']
+        media={}
+        media['content'] = f.stream.read()
+        media['content_type'] = f.mimetype
+        result = db.media.insert_one(media)
+        if result.acknowledged:
+            return jsonify({"status":"OK","id":str(result.inserted_id)})
+        else:
+            return jsonify({"status":"error","error":"failed to insert"})
+    def get(self,id):
+        result = db.media.find_one({"_id":ObjectId(id)})
+        if result:
+            f = BytesIO(result['content'])
+            return send_file(f,mimetype=result['content_type'])
+        else:
+            return jsonify({"status":"error","error":"file not found"})
+

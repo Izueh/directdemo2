@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div>
+         <form action="/additem" method="post">
+            <input type="text" placeholder="tweet" name="content">
+            <input type="submit">
+        </form>
+    </div>
+
+    {% for tweet in tweets %}
+        <div>
+            <p>
+                {{ tweet['username']}}: <br>
+                {{ tweet['content'] }}
+            </p>
+        </div>
+</body>
+</html>

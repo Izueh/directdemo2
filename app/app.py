@@ -1,13 +1,14 @@
 import eventlet
 eventlet.monkey_patch()
 import eventlet.wsgi
-from flask import Flask, request, session
+from flask import Flask, request, session, render_template, redirect,url_for
 from pymongo import MongoClient
 from views.authentication import AddUser, Login, Logout, Verify
 from views.items import AddItem, ESearch, Item, Media
 from views.user import User, Follow, Following, Followers
 import messages
 import logging
+from db import db
 
 app = Flask(__name__)
 app.secret_key = 'secret sezchuan sauce'
@@ -32,6 +33,21 @@ app.add_url_rule('/user/<string:username>',defaults={'query':None},view_func=Use
 app.add_url_rule('/user/<string:username>/<string:query>', view_func=User.as_view('followers'))
 #app.add_url_rule('/user/<string:username>/', view_func=Following.as_view('following'))
 app.add_url_rule('/follow',view_func=Follow.as_view('follow'),methods=['POST'])
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return redirect(url_for('home'))
+    else:
+        return render_template('index.html')
+
+@app.route('/home')
+def home():
+    result = db.items.find({'username':session['username']}).sort_by({'timestamp':-1}).limit(10)
+    return render_template('home.html',tweets=result)
+
+
+
 
 @app.before_request
 def log_request_info():

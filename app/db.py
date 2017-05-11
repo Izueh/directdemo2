@@ -6,6 +6,6 @@ from elasticsearch import Elasticsearch
 client = MongoClient('localhost',27017)
 db = client.twitter
 fs = GridFS(db)
-es = Elasticsearch('search')
+es = Elasticsearch(['search','search-1','search-2'],sniff_on_start=True)
 #cluster = Cluster(['cassandra'])
 #cassandra = cluster.connect('dirdemo')

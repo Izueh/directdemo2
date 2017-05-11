@@ -82,6 +82,7 @@ echo -e "\e[39m"
 
 #search 
 echo "Testing search with no options"
+curl localhost/search -d '{}' -H "Content-Type: application/json" -b saved-cookie
 response=$(curl localhost/search -d '{}' -H "Content-Type: application/json" -b saved-cookie)
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]

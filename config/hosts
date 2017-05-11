@@ -5,6 +5,7 @@ appserver-2 ansible_python_interpreter=/usr/bin/python3
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
 appserver-4 ansible_python_interpreter=/usr/bin/python3 
 appserver-5 ansible_python_interpreter=/usr/bin/python3 
+appserver-6 ansible_python_interpreter=/usr/bin/python3 
 
 [database1]
 dbserver-1 ansible_python_interpreter=/usr/bin/python3 
@@ -15,12 +16,16 @@ dbserver-2 ansible_python_interpreter=/usr/bin/python3
 [database3]
 dbserver-3 ansible_python_interpreter=/usr/bin/python3 
 
+[database4]
+dbserver-4 ansible_python_interpreter=/usr/bin/python3 
+
 [route]
 appserver-1 ansible_python_interpreter=/usr/bin/python3 
 appserver-2 ansible_python_interpreter=/usr/bin/python3 
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
 appserver-4 ansible_python_interpreter=/usr/bin/python3 
 appserver-5 ansible_python_interpreter=/usr/bin/python3 
+appserver-6 ansible_python_interpreter=/usr/bin/python3 
 
 [config]
 configsvr ansible_python_interpreter=/usr/bin/python3 
@@ -28,5 +33,7 @@ configsvr ansible_python_interpreter=/usr/bin/python3
 [configleader]
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
 
-[search]
+[elasticsearch]
+search-1 ansible_python_interpreter=/usr/bin/python3 
+search-2 ansible_python_interpreter=/usr/bin/python3 
 search ansible_python_interpreter=/usr/bin/python3 

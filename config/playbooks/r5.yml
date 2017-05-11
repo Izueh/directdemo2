@@ -1,5 +1,5 @@
 ---
-- hosts: database3
+- hosts: database5
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -27,7 +27,7 @@
           sharding:
             clusterRole: shardsvr 
           replication:
-            replSetName: r3
+            replSetName: r5
     - name: remove bindIP
       lineinfile: 
         regexp: 'bindIp.*' 

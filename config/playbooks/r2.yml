@@ -36,6 +36,6 @@
     - name: restart mongod
       service: name=mongod state=restarted
     - name: init
-      shell: mongo --eval "rs.init()"
+      shell: mongo --eval "rs.initiate()"
 
    

@@ -34,9 +34,9 @@
       copy: src=/home/ubuntu/directdemo2/config/routeconfig dest=/home/ubuntu
     - name: copy init script
       copy: src=/home/ubuntu/directdemo2/config/routeinit.js dest=/home/ubuntu
-    - name: stop mongos
-      shell: pkill -f mongos
-      ignore_errors: true
+    - name: kill mongos
+      shell: pkill -f mongo
+      ignore_errors: yes
     - name: start mongos
       shell: /usr/bin/mongos --fork --config /home/ubuntu/routeconfig --logpath mongo-log
     - name: run init script

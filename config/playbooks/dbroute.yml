@@ -1,5 +1,5 @@
 ---
-- hosts: route 
+- hosts: application 
   remote_user: ubuntu
   tasks:
     - name: get mongo key 
@@ -34,7 +34,10 @@
       copy: src=/home/ubuntu/directdemo2/config/routeconfig dest=/home/ubuntu
     - name: copy init script
       copy: src=/home/ubuntu/directdemo2/config/routeinit.js dest=/home/ubuntu
+    - name: stop mongos
+      shell: pkill -f mongos
+      ignore_errors: true
     - name: start mongos
-      shell: /usr/bin/mongos --config /home/ubuntu/routeconfig &
-    - name: start
-      command: /usr/bin/mongo /home/ubuntu/routeinit.js
+      shell: /usr/bin/mongos --fork --config /home/ubuntu/routeconfig --logpath mongo-log
+    - name: run init script
+      shell: mongo /home/ubuntu/routeinit.js

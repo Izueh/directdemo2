@@ -22,6 +22,17 @@
         regexp: 'bindIp.*'
         state: absent
         dest: /etc/mongod.conf
+    - name: remove port 
+      lineinfile:
+        regexp: 'port.*'
+        state: absent
+        dest: /etc/mongod.conf
+    - name: remove port 
+      lineinfile:
+        regexp: 'net.*'
+        state: absent
+        dest: /etc/mongod.conf
+
     - name: modify mongod conf for sharding
       blockinfile: 
         dest: /etc/mongod.conf
@@ -30,6 +41,13 @@
             clusterRole: configsvr
           replication:
             replSetName: conf 
-    - name: restart mongod
-      service: name=mongod state=restarted
-
+    - name: make mongo dir 2
+      file: path=/var/lib/mongodb2 state=directory
+    - name: make mongo dir 3
+      file: path=/var/lib/mongodb3 state=directory
+    - name: mongod1
+      shell: mongod --fork --port 27017 --dbpath /var/lib/mongodb --logpath /home/ubuntu/mongo1 --configsvr --replSet conf
+    - name: mongod2
+      shell: mongod --fork --port 27018 --dbpath /var/lib/mongodb2 --logpath /home/ubuntu/mongo2 --configsvr --replSet conf
+    - name: mongod3
+      shell: mongod --fork --port 27019 --dbpath /var/lib/mongodb3 --logpath /home/ubuntu/mongo3 --configsvr --replSet conf

@@ -1,25 +1,32 @@
-[loadbalancer]
 
 [application]
 appserver-1 ansible_python_interpreter=/usr/bin/python3 
 appserver-2 ansible_python_interpreter=/usr/bin/python3 
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
+appserver-4 ansible_python_interpreter=/usr/bin/python3 
+appserver-5 ansible_python_interpreter=/usr/bin/python3 
 
-[database]
+[database1]
 dbserver-1 ansible_python_interpreter=/usr/bin/python3 
+
+[database2]
 dbserver-2 ansible_python_interpreter=/usr/bin/python3 
+
+[database3]
 dbserver-3 ansible_python_interpreter=/usr/bin/python3 
 
 [route]
-loadbalancer ansible_python_interpreter=/usr/bin/python3 
-
-[cassandra]
-cassandra ansible_python_interpreter=/usr/bin/python3 
-
-[config]
 appserver-1 ansible_python_interpreter=/usr/bin/python3 
 appserver-2 ansible_python_interpreter=/usr/bin/python3 
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
+appserver-4 ansible_python_interpreter=/usr/bin/python3 
+appserver-5 ansible_python_interpreter=/usr/bin/python3 
+
+[config]
+configsvr ansible_python_interpreter=/usr/bin/python3 
 
 [configleader]
 appserver-3 ansible_python_interpreter=/usr/bin/python3 
+
+[search]
+search ansible_python_interpreter=/usr/bin/python3 

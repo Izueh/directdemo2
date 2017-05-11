@@ -1,2 +1,2 @@
 sharding:
-  configDB: conf/appserver-1:27017,appserver-2:27017,appserver-3:27017
+  configDB: conf/configsvr:27017,configsvr:27018,configsvr:27019

@@ -13,18 +13,24 @@ from io import BytesIO
 class AddItem(MethodView):
     def post(self):
         json = request.get_json()
-        json['timestamp'] = time()
-        json['username'] = session['username']
+        item = {}
+        item['content'] = json['content']
+        item['timestamp'] = time()
+        item['username'] = session['username']
         if 'parent' not in json:
-            json['parent'] = None
+            item['parent'] = None
+        else:
+            item['parent']=json['parent']
+        if 'media' in json:
+            item['media']=json['media']
         obj_id = ObjectId()
-        json['_id'] = obj_id
-        json['id'] = str(obj_id)
-        result = db.items.insert_one(json)
+        item['_id'] = obj_id
+        item['id'] = str(obj_id)
+        result = db.items.insert_one(item)
         if result.acknowledged:
-            if json['parent']:
-                json['_id']=json['id']
-                db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
+            #if json['parent']:
+                #json['_id']=json['id']
+                #db.items.update_one({'_id':ObjectId(json['parent'])},{'$push':{'replies':json}, '$inc': {'interest_score': 1} })
             return jsonify({'status': 'OK', 'id': str(obj_id)})
         else:
             return jsonify(CODE_ERROR)
@@ -40,7 +46,7 @@ class Item(MethodView):
 
     def delete(self, id):
         result = db.items.find_one({'_id':ObjectId(id)})
-        delete = db['items'].delete_one(result)
+        delete = db['items'].delete_one(result);
         if 'media' in result:
             for x in result['media']:
                 try:
@@ -148,7 +154,7 @@ class OldSearch(MethodView):
 
         #return jsonify({'status': 'OK', 'id': str(new_id)})
 
-class eSearch(MethodView):
+class ESearch(MethodView):
     def post(self):
         json = request.get_json()
         s = Search(using=es,index='twitter',doc_type='items')
@@ -163,7 +169,7 @@ class eSearch(MethodView):
         search = 'q' in json
         limit = json.pop('limit') if 'limit' in json and json['limit'] <= 100 else 50
         following_list = db.user.find_one({'username':session['username']})['following'] # do we only need this is following=true?
-        query = {'timestamp':{'$lte':timestamp}}
+        #query = {'timestamp':{'$lte':timestamp}}
         s = s.filter('range', timestamp={'lte':timestamp})
         if search:
             #query['$text'] = {'$search':json['q']}
@@ -205,7 +211,8 @@ class eSearch(MethodView):
         #results = db.items.find(filter=query, limit=limit, sort=sort_by)
         #results = db.items.aggregate([{'$match':query}, {'$limit': limit}, {'$sort': sort_by}])
         results = s.execute()
-        return Response(response = dumps({'status':'OK','items':list(results)}),mimetype='application/json')
+        l = [x['_source'].to_dict() for x in results['hits']['hits']]
+        return Response(response = dumps({'status':'OK','items':l}),mimetype='application/json')
 
 
 

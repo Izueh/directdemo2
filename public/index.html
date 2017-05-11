@@ -1,71 +1,39 @@
+<!DOCTYPE html>
 <html>
-	<head>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<script type="text/javascript" src="form.js"></script>
-	</head>
-	<body>
-		<form class="staticRoute" action="/api/adduser" method="post">
-			<input type="text" name="username" placeholder="username">
-			<input type="text" name="email" placeholder="email">
-			<input type="password" name="password" placeholder="password">
-			<input type="submit" value="Add User"> 
-		</form>
+    <head>
+        <title>Twitter</title>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@0.6.2/build/pure-min.css" integrity="sha384-UQiGfs9ICog+LwheBSRCt1o5cbyKIHbwjWscjemyBMT9YCUMZffs6UqUTd0hObXD" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="pure-menu pure-menu-horizontal">
+            <span class="pure-menu-heading">Twitter</span>
 
-		<form class="staticRoute" action="/api/verify" method="post">
-			<input type="text" name="email" placeholder="email">
-			<input type="text" name="key" placeholder="key">
-			<input type="submit" value="Verify">
-		</form>
-
-		<form class="staticRoute" action="/api/login" method="post">
-			<input type="text" name="username" placeholder="username">
-			<input type="password" name="password" placeholder="password">
-			<input type="submit" value="Login">
-		</form>
-
-		<form class="staticRoute" action="/api/logout">
-			<input type="submit" value="Logout" method="post">
-		</form>
-
-		<form class="staticRoute" action="/api/additem">
-			<input type="text" name="content" placeholder="content">
-			<input type="text" name="type" placeholder="type">
-			<input type="submit" value="Add Item" method="post">
-		</form>	
-
-		<form class="routeID" method="get">
-			<input type="text" id="itemID" name="ID" placeholder="ID">
-			<input type="submit" value="Get Item" method="get">
-		</form>
-
-		<form class="deleteRouteID" method="delete">
-			<input type="text" id="itemIDDel" name="ID" placeholder="ID">
-			<input type="submit" value="Delete" method="get">
-		</form>
-
-		<form class="userRoute" action="/api/user/">
-			<input type="text" id="usernameGET" name="ID" placeholder="ID">
-            <button id="userFollowers">Get User Followers</button>
-            <button id=userFollowing>Get User Following</button>
-			<input type="submit" value="Get User" method="get">
-		</form>
-
-		<form class="staticRoute" action="/api/follow" method="post">
-			<input type="text" id="toFollow" name="username" placeholder="username">
-			<input type="text" name="follow" placeholder="follow">
-			<input type="submit" value="Follow a User" method="get">
-		</form>
-
-		<form class="staticRoute" action="/api/search">
-			<input type="text" name="timestamp" placeholder="timestamp">
-			<input type="text" name="limit" placeholder="limit">
-			<input type="text" name="q" placeholder="q">
-			<input type="text" name="username" placeholder="username">
-			<input type="text" name="following" placeholder="following">
-			<input type="submit" value="Search" method="post">
-		</form>	
-
-		<div id="items">
-		</div>
-	</body>
+        </div>
+        <div class="">
+            <form class="pure-form-stacked" action="/" method="POST">
+                <fieldset>
+                    <legend>Register</legend>
+                    <input type="text" placeholder="username">
+                    <input type="email" placeholder="email">
+                    <input type="password" placeholder="password">
+                    <input type="submit">
+                </fieldset>
+            </form>
+        </div>
+        <div>
+            <form class="pure-form-stacked" action="/" method="POST">
+                <fieldset>
+                    <legend>Login</legend>
+                    <input type="text" placeholder="username">
+                    <input type="password" placeholder="password">
+                    <input type="submit">
+                </fieldset>
+            </form>
+        </div>
+       <script
+			  src="https://code.jquery.com/jquery-3.2.1.js"
+			  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+			  crossorigin="anonymous">
+       </script>
+    </body>
 </html>

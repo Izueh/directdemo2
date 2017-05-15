@@ -51,3 +51,7 @@
       shell: mongod --fork --port 27018 --dbpath /var/lib/mongodb2 --logpath /home/ubuntu/mongo2 --configsvr --replSet conf
     - name: mongod3
       shell: mongod --fork --port 27019 --dbpath /var/lib/mongodb3 --logpath /home/ubuntu/mongo3 --configsvr --replSet conf
+    - name: copy init
+      copy: src=/home/ubuntu/directdemo2/config/init.js dest=/home/ubuntu/
+    - name: init repl
+      shell: mongo /home/ubuntu/init.js

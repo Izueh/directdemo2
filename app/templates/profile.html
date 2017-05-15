@@ -8,32 +8,24 @@
 <body>
     <div class="pure-menu pure-menu-horizontal">
         <span class="pure-menu-heading">Twitter</span>
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item">
-                <form id="search">
-                    <input type="text" name="q" placeholder="search">
-                </form>
-            </li>
-        </ul>
-    </div>
-    <div>
-         <form id="tweet" action="/additem" method="post">
-            <input type="text" placeholder="tweet" name="content">
-            <input type="submit">
-        </form>
-    </div>
-
-    <div id="results">
-         
     </div>
     <div class="tweets">
-        <h2>Me</h2>
+        <h2>{{ username }}</h2>
+        {% if following %}
+            <button onclick='unfollow("{{ username }}")'>unfollow</button>
+        {% else %}
+            <button onclick='follow("{{ username }}")'>follow</button>
+        {% endif %}
+
     {% for tweet in tweets %}
         <div>
             <p>
                 {{ tweet['username']}}: <br>
                 {{ tweet['content'] }}
+                
             </p>
+            <button onclick='like("{{ tweet.id }}")'>like</button>
+            <button onclick='unlike("{{ tweet.id }}")'>unlike</button>
         </div>
     {% endfor %}
     </div>
@@ -41,6 +33,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.js"
 			  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
 			  crossorigin="anonymous"> </script>
-    <script src="/public/js/home.js"></script>
+    <script src="/public/js/profile.js"></script>
 </body>
 </html>

@@ -33,9 +33,18 @@
         regexp: 'bindIp.*' 
         state: absent
         dest: /etc/mongod.conf
+    - name: modify default journaling configuration
+      lineinfile:
+        regexp: 'enabled: true'
+        state: present
+        line: '    enabled: false'
+        dest: /etc/mongod.conf
     - name: restart mongod
       service: name=mongod state=restarted
+    - name: copy init
+      copy: src=/home/ubuntu/directdemo2/config/init.js dest=/home/ubuntu
     - name: init
-      shell: mongo --eval "rs.initiate()"
-
+      shell: mongo /home/ubuntu/init.js
+    - name: iotop
+      apt: name=iotop
    

@@ -1,7 +1,7 @@
-import eventlet
-eventlet.monkey_patch()
-import eventlet.wsgi
-from flask import Flask, request, session, render_template, redirect,url_for
+#import eventlet
+#eventlet.monkey_patch()
+#import eventlet.wsgi
+from flask import Flask, request, session, render_template, redirect,url_for, abort
 from pymongo import MongoClient
 from views.authentication import AddUser, Login, Logout, Verify
 from views.items import AddItem, ESearch, Item, Media
@@ -16,7 +16,7 @@ app.secret_key = 'secret sezchuan sauce'
 gunicorn_error_logger = logging.getLogger('log/gunicorn-error')
 app.logger.handlers.extend(gunicorn_error_logger.handlers)
 app.logger.setLevel(logging.DEBUG)
-eventlet_socket = eventlet.listen(('',5000))
+#eventlet_socket = eventlet.listen(('',5000))
 
 
 app.add_url_rule('/adduser', view_func=AddUser.as_view('adduser'),methods=['POST'])
@@ -43,11 +43,24 @@ def index():
 
 @app.route('/home')
 def home():
-    result = db.items.find({'username':session['username']}).sort_by({'timestamp':-1}).limit(10)
+    if 'username' not in session:
+        return abort(401)
+    result = db.items.find({'username':session['username']}).sort('timestamp',-1).limit(10)
     return render_template('home.html',tweets=result)
 
-
-
+@app.route('/profile/<string:username>')
+def profile(username):
+    if 'username' not in session:
+        return abort(401)
+    if username == session['username']:
+        return redirect(url_for('home'))
+    result = db.items.find({'username':username}).sort('timestamp',-1).limit(10)
+    user = db.user.find_one({'username':session['username']})
+    if 'following' in user:
+        following = username in user['following']
+    else:
+        following = False
+    return render_template('profile.html',tweets=result,username=username,following=following)
 
 @app.before_request
 def log_request_info():
@@ -55,4 +68,5 @@ def log_request_info():
     app.logger.debug('Body: %s', request.get_data())
 
 if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet_socket,app)
+    #eventlet.wsgi.server(eventlet_socket,app)
+    app.run()

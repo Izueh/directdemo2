@@ -1,4 +1,4 @@
-for(var i=1;i<6;i++){
+for(var i=1;i<=5;i++){
     sh.addShard("r"+i+"/dbserver-" + i + ":27017");
 }
 sh.enableSharding('twitter');

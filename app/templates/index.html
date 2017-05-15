@@ -10,33 +10,31 @@
 
         </div>
         <div class="">
-            <form class="pure-form-stacked" action="/" method="POST">
+            <form class="pure-form-stacked" action="/" method="GET" id="registerform">
                 <fieldset>
                     <legend>Register</legend>
-                    <input type="text" placeholder="username">
-                    <input type="email" placeholder="email">
-                    <input type="password" placeholder="password">
+                    <input type="text" placeholder="username" name="username">
+                    <input type="email" placeholder="email" name="email">
+                    <input type="password" placeholder="password" name="password">
                     <input type="submit">
                 </fieldset>
             </form>
         </div>
         <div>
-            <form class="pure-form-stacked" action="/" method="POST">
+            <form class="pure-form-stacked" action="/" method="GET" id="loginform">
                 <fieldset>
                     <legend>Login</legend>
-                    <input type="text" placeholder="username">
-                    <input type="password" placeholder="password">
+                    <input type="text" placeholder="username" name="username">
+                    <input type="password" placeholder="password" name="password">
                     <input type="submit">
                 </fieldset>
             </form>
         </div>
-       <script
+        <script
 			  src="https://code.jquery.com/jquery-3.2.1.js"
 			  integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
 			  crossorigin="anonymous">
-       </script>
-       <script src="/static/form.js"></script> 
-       <script src="/static/login.js"></script> 
-       <script src="/static/register.js"></script> 
+        </script>
+        <script src="/public/js/login.js"></script> 
     </body>
 </html>

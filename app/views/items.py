@@ -69,7 +69,7 @@ class Item(MethodView):
             tweet['interest_score'] = tweet['interest_score'] + 1
         else:
             if session['username'] in tweet['likes']:
-                tweet['likes'].pop(session['username'])
+                tweet['likes'].remove(session['username'])
                 tweet['interest_score'] = tweet['interest_score'] - 1
             else:
                 return jsonify({'status':'error','error':'user has not liked this'})

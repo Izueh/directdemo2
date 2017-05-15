@@ -122,7 +122,8 @@ echo -e "\e[39m"
 
 #add media
 echo "Testing add media"
-response=$(curl localhost/addmedia -F content=<../nbc-fires-donald-trump-after-he-calls-mexicans-rapists.jpg -b saved-cookie)
+curl localhost/addmedia -F content=<media -b saved-cookie
+response=$(curl localhost/addmedia -F content=<media -b saved-cookie)
 itemid=$(jq -r '.id' <<< "$response")
 status=$(jq -r '.status' <<< $response)
 if [ "$status" = "OK" ]

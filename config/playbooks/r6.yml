@@ -1,5 +1,5 @@
 ---
-- hosts: database4
+- hosts: database6
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -27,7 +27,7 @@
           sharding:
             clusterRole: shardsvr 
           replication:
-            replSetName: r4
+            replSetName: r6
     - name: remove bindIP
       lineinfile: 
         regexp: 'bindIp.*' 
@@ -41,10 +41,7 @@
         dest: /etc/mongod.conf
     - name: restart mongod
       service: name=mongod state=restarted
-    - name: copy init
-      copy: src=/home/ubuntu/directdemo2/config/init.js dest=/home/ubuntu
     - name: init
-      shell: mongo /home/ubuntu/init.js 
-    - name: iotop
-      apt: name=iotop
+      shell: mongo --eval "rs.initiate()"
+
    
